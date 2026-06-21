@@ -1,0 +1,120 @@
+name: Android CI/CD
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: Build APK
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+      with:
+        submodules: recursive
+        fetch-depth: 0
+
+    - name: Set up Swap Space
+      uses: pierotofy/set-swap-space@master
+      with:
+        swap-size-gb: 10
+
+    - name: set up JDK 17
+      uses: actions/setup-java@v4
+      with:
+        java-version: '17'
+        distribution: 'temurin'
+
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
+      with:
+        packages: 'build-tools;35.0.0 ndk;27.2.12479018'
+
+    - name: Grant execute permission for gradlew
+      run: chmod +x gradlew
+
+    - name: Build Gomin (Universal APK + Release)
+      run: |
+        ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone \
+          --no-daemon \
+          --stacktrace \
+          -Dorg.gradle.workers.max=2 \
+          -Pandroid.handler.cmake.parallelJobs=2 \
+          -Dorg.gradle.jvmargs="-Xmx7g -XX:+HeapDumpOnOutOfMemoryError -XX:MaxMetaspaceSize=1g"
+
+    - name: Find and Prepare APK
+      id: find_apk
+      run: |
+        echo "Searching for APK files in workspace..."
+        find . -name "*.apk" || true
+        APK_PATH=$(find . -name "*.apk" | grep "standalone" | head -n 1)
+        
+        if [ -z "$APK_PATH" ]; then
+          APK_PATH=$(find . -name "*.apk" | head -n 1)
+        fi
+        
+        if [ -z "$APK_PATH" ]; then
+          echo "Error: APK not found!"
+          echo "Listing directory structure of build outputs:"
+          find TMessagesProj_AppStandalone/build/outputs/ || true
+          exit 1
+        fi
+        echo "Found APK at: $APK_PATH"
+        cp "$APK_PATH" gomin-release.apk
+        echo "apk_path=gomin-release.apk" >> $GITHUB_OUTPUT
+
+    - name: Create Rolling Release
+      id: create_release
+      uses: ncipollo/release-action@v1
+      with:
+        tag: "latest-release"
+        name: "Гомін.UA - Останній білд"
+        body: "Універсальний підписаний APK Гомін.UA. Коміт: ${{ github.sha }} (повідомлення: ${{ github.event.head_commit.message }})"
+        artifacts: "gomin-release.apk"
+        allowUpdates: true
+        removeArtifacts: true
+        replacesArtifacts: true
+        makeLatest: true
+        token: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send Success Notification
+      if: success()
+      env:
+        BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        if [ -n "$BOT_TOKEN" ] && [ -n "$CHAT_ID" ]; then
+          RESULT_URL="https://github.com/${{ github.repository }}/releases/tag/latest-release"
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          MESSAGE="📦 <b>Гомін.UA Build Notification</b> 🚀%0A%0AСтатус: ✅ <b>Успішно</b>%0AГілка: <code>${{ github.ref_name }}</code>%0AКоміт: <code>${COMMIT_MSG}</code>%0A%0A<a href='${RESULT_URL}'>📦 Завантажити APK з Релізу</a>"
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MESSAGE}" \
+            -d "parse_mode=HTML"
+        else
+          echo "Telegram notifications not configured. Skipping."
+        fi
+
+    - name: Send Failure Notification
+      if: failure()
+      env:
+        BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+        CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+      run: |
+        if [ -n "$BOT_TOKEN" ] && [ -n "$CHAT_ID" ]; then
+          LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          COMMIT_MSG=$(git log -1 --pretty=%s)
+          MESSAGE="⚠️ <b>Гомін.UA Build Notification</b> ❌%0A%0AСтатус: ❌ <b>Помилка</b>%0AГілка: <code>${{ github.ref_name }}</code>%0AКоміт: <code>${COMMIT_MSG}</code>%0A%0A<a href='${LOG_URL}'>🔍 Подивитись логи</a>"
+          curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            -d "chat_id=${CHAT_ID}" \
+            -d "text=${MESSAGE}" \
+            -d "parse_mode=HTML"
+        else
+          echo "Telegram notifications not configured. Skipping."
+        fi
