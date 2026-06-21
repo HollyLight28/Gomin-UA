@@ -3,16 +3,20 @@ package ua.gomin.messenger.preferences;
 import android.content.Context;
 import android.view.View;
 
-import org.telegram.ui.ActionBar.Theme;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 import org.telegram.ui.Components.UniversalFragment;
 
 import java.util.ArrayList;
 
+import ua.gomin.messenger.configs.GominCameraConfig;
+import ua.gomin.messenger.configs.GominChatsConfig;
+import ua.gomin.messenger.configs.GominCoreConfig;
+import ua.gomin.messenger.configs.GominMessagesConfig;
+import ua.gomin.messenger.configs.GominPrivacyConfig;
+
 /**
  * Головна сторінка налаштувань Гоміна.
- * Відкривається з профілю Telegram.
  */
 public class GominSettingsEntry extends UniversalFragment {
 
@@ -78,79 +82,102 @@ public class GominSettingsEntry extends UniversalFragment {
         Context context = getContext();
         if (context == null) return;
 
-        // ❤️ Підтримка проекту
-        // items.add(UItem.asShadow(null));
-
         // 🤖 GOMIN AI
-        items.add(UItem.asHeaderWithIcon(geminiSettingsRow, "🤖 Gomin AI"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_bot, "🤖 Gomin AI"));
         items.add(UItem.asButton(geminiSettingsRow, "Налаштування Gemini"));
         items.add(UItem.asShadow(null));
 
         // 👻 Ghost Mode
-        items.add(UItem.asHeaderWithIcon(ghostModeReadMessagesRow, "👻 Ghost Mode"));
-        items.add(UItem.asSwitch(ghostModeReadMessagesRow, "Невидиме читання", "Читай повідомлення без позначки "прочитано""));
-        items.add(UItem.asSwitch(ghostModeHideTypingRow, "Приховати друкування", "Ніхто не бачить коли ти печатаєш"));
-        items.add(UItem.asSwitch(ghostModeHideStoryViewsRow, "Анонімні історії", "Перегляди сторіс не відображаються"));
-        items.add(UItem.asSwitch(ghostModeHideOnlineRow, "Прихований онлайн", "Ніхто не бачить що ти в мережі"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.ghost_solar, "👻 Ghost Mode"));
+        items.add(SettingsHelper.asSwitchCG(ghostModeReadMessagesRow, "Невидиме читання", "Читай повідомлення без позначки прочитано")
+                .setChecked(GominPrivacyConfig.INSTANCE.getGhostModeReadMessages(context)));
+        items.add(SettingsHelper.asSwitchCG(ghostModeHideTypingRow, "Приховати друкування", "Ніхто не бачить коли ти печатаєш")
+                .setChecked(GominPrivacyConfig.INSTANCE.getGhostModeHideTyping(context)));
+        items.add(SettingsHelper.asSwitchCG(ghostModeHideStoryViewsRow, "Анонімні історії", "Перегляди сторіс не відображаються")
+                .setChecked(GominPrivacyConfig.INSTANCE.getGhostModeHideStoryViews(context)));
+        items.add(SettingsHelper.asSwitchCG(ghostModeHideOnlineRow, "Прихований онлайн", "Ніхто не бачить що ти в мережі")
+                .setChecked(GominPrivacyConfig.INSTANCE.getGhostModeHideOnline(context)));
         items.add(UItem.asShadow(null));
 
         // 🚨 Повітряна тривога
-        items.add(UItem.asHeaderWithIcon(airAlertEnabledRow, "🚨 Повітряна тривога"));
-        items.add(UItem.asSwitch(airAlertEnabledRow, "Увімкнено", null));
-        items.add(UItem.asButton(airAlertRegionRow, "Регіон", "Не встановлено"));
-        items.add(UItem.asButton(airAlertTestRow, "Тест", null));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_bell_mute_solar, "🚨 Повітряна тривога"));
+        items.add(SettingsHelper.asSwitchCG(airAlertEnabledRow, "Увімкнено", null)
+                .setChecked(GominCoreConfig.INSTANCE.getAirAlertEnabled(context)));
+        if (GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
+            String regionName = GominCoreConfig.INSTANCE.getAirAlertRegionName(context);
+            items.add(UItem.asButton(airAlertRegionRow, "Регіон", regionName.isEmpty() ? "Не встановлено" : regionName));
+            items.add(UItem.asButton(airAlertTestRow, "Тест", null));
+        }
         items.add(UItem.asShadow(null));
 
         // 🔊 Звук сповіщень
-        items.add(UItem.asHeaderWithIcon(notificationSoundRow, "🔊 Звук сповіщень"));
-        items.add(UItem.asButton(notificationSoundRow, "Вибір звуку", "Стандартний"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_speed, "🔊 Звук сповіщень"));
+        items.add(UItem.asButton(notificationSoundRow, "Вибір звуку", getNotificationSoundValue(context)));
         items.add(UItem.asShadow(null));
 
         // ⚡ Speed Engine
-        items.add(UItem.asHeaderWithIcon(downloadSpeedBoostRow, "⚡ Speed Engine"));
-        items.add(UItem.asButton(downloadSpeedBoostRow, "Завантаження", "Максимально"));
-        items.add(UItem.asSwitch(uploadSpeedBoostRow, "Прискорення завантаження", "Буфер 512KB"));
-        items.add(UItem.asSwitch(slowNetworkModeRow, "Режим слабкої мережі", "1 потік × 32KB"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_speed, "⚡ Speed Engine"));
+        items.add(UItem.asButton(downloadSpeedBoostRow, "Завантаження", getDownloadSpeedBoostValue(context)));
+        items.add(SettingsHelper.asSwitchCG(uploadSpeedBoostRow, "Прискорення завантаження", "Буфер 512KB")
+                .setChecked(GominCoreConfig.INSTANCE.getUploadSpeedBoost(context)));
+        items.add(SettingsHelper.asSwitchCG(slowNetworkModeRow, "Режим слабкої мережі", "1 потік × 32KB")
+                .setChecked(GominCoreConfig.INSTANCE.getSlowNetworkMode(context)));
         items.add(UItem.asShadow(null));
 
         // 📷 Камера
-        items.add(UItem.asHeaderWithIcon(cameraDualRow, "📷 Камера"));
-        items.add(UItem.asSwitch(cameraDualRow, "Подвійна камера", "Використовувати дві камери одночасно"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_camera, "📷 Камера"));
+        items.add(SettingsHelper.asSwitchCG(cameraDualRow, "Подвійна камера", "Використовувати дві камери одночасно")
+                .setChecked(GominCameraConfig.INSTANCE.getUseDualCamera(context)));
         items.add(UItem.asShadow(null));
 
         // 💬 Поведінка
-        items.add(UItem.asHeaderWithIcon(autoQuoteRow, "💬 Поведінка"));
-        items.add(UItem.asSwitch(autoQuoteRow, "Авто-цитата", "Автоматично цитувати при відповіді"));
-        items.add(UItem.asSwitch(deleteForAllRow, "Видалити у всіх", "Підтвердження для видалення у всіх"));
-        items.add(UItem.asSwitch(keepDeletedMessagesRow, "Зберігати видалені", "Не видаляти з локальної БД"));
-        items.add(UItem.asSwitch(customWallpapersRow, "Кастомні шпалери", "Використовувати преміум шпалери"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_settings, "💬 Поведінка"));
+        items.add(SettingsHelper.asSwitchCG(autoQuoteRow, "Авто-цитата", "Автоматично цитувати при відповіді")
+                .setChecked(GominChatsConfig.INSTANCE.getAutoQuoteReplies(context)));
+        items.add(SettingsHelper.asSwitchCG(deleteForAllRow, "Видалити у всіх", "Підтвердження для видалення у всіх")
+                .setChecked(GominMessagesConfig.INSTANCE.getDeleteForAll(context)));
+        items.add(SettingsHelper.asSwitchCG(keepDeletedMessagesRow, "Зберігати видалені", "Не видаляти з локальної БД")
+                .setChecked(GominPrivacyConfig.INSTANCE.getKeepDeletedMessages(context)));
+        items.add(SettingsHelper.asSwitchCG(customWallpapersRow, "Кастомні шпалери", "Використовувати преміум шпалери")
+                .setChecked(GominChatsConfig.INSTANCE.getCustomWallpapers(context)));
         items.add(UItem.asShadow(null));
 
         // 🎨 Інтерфейс
-        items.add(UItem.asHeaderWithIcon(hideSearchBarRow, "🎨 Інтерфейс"));
-        items.add(UItem.asSwitch(hideSearchBarRow, "Приховати пошук", "Приховати рядок пошуку"));
-        items.add(UItem.asSwitch(hideStoriesRow, "Приховати історії", "Не показувати Stories"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.settings_devices, "🎨 Інтерфейс"));
+        items.add(SettingsHelper.asSwitchCG(hideSearchBarRow, "Приховати пошук", "Приховати рядок пошуку")
+                .setChecked(false));
+        items.add(SettingsHelper.asSwitchCG(hideStoriesRow, "Приховати історії", "Не показувати Stories")
+                .setChecked(GominCoreConfig.INSTANCE.getHideStories(context)));
         items.add(UItem.asShadow(null));
 
         // 🛠️ Інше
-        items.add(UItem.asHeaderWithIcon(springAnimationRow, "🛠️ Інше"));
-        items.add(UItem.asSwitch(springAnimationRow, "Spring анімація", "Пружинна анімація переходів"));
-        items.add(UItem.asButton(doubleTapRow, "Подвійний тап", "Реакція"));
-        items.add(UItem.asButton(slideActionRow, "Дія свайпа", "Відповісти"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_settings, "🛠️ Інше"));
+        items.add(SettingsHelper.asSwitchCG(springAnimationRow, "Spring анімація", "Пружинна анімація переходів")
+                .setChecked(GominCoreConfig.INSTANCE.getSpringAnimation(context) == GominCoreConfig.ANIMATION_SPRING));
+        items.add(UItem.asButton(doubleTapRow, "Подвійний тап", getDoubleTapActionValue(context)));
+        items.add(UItem.asButton(slideActionRow, "Дія свайпа", getSlideActionValue(context)));
         items.add(UItem.asShadow(null));
 
         // 🔒 Безпека
-        items.add(UItem.asHeaderWithIcon(securityAskBioRow, "🔒 Безпека"));
-        items.add(UItem.asSwitch(securityAskBioRow, "Біометрія для чатів", "Захист відбитком пальця"));
-        items.add(UItem.asSwitch(securityBioEncryptedRow, "Біометрія для encrypted", "Захист секретних чатів"));
-        items.add(UItem.asSwitch(securityBioArchiveRow, "Біометрія для архіву", "Захист архіву"));
-        items.add(UItem.asSwitch(securityBioDeleteRow, "Пін перед видаленням", "Підтвердження видалення акаунту"));
-        items.add(UItem.asSwitch(securitySystemPinRow, "Системний пін", "Використовувати системний пін-код"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.settings_security, "🔒 Безпека"));
+        items.add(SettingsHelper.asSwitchCG(securityAskBioRow, "Біометрія для чатів", "Захист відбитком пальця")
+                .setChecked(GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat(context)));
+        items.add(SettingsHelper.asSwitchCG(securityBioEncryptedRow, "Біометрія для encrypted", "Захист секретних чатів")
+                .setChecked(GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted(context)));
+        items.add(SettingsHelper.asSwitchCG(securityBioArchiveRow, "Біометрія для архіву", "Захист архіву")
+                .setChecked(GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive(context)));
+        items.add(SettingsHelper.asSwitchCG(securityBioDeleteRow, "Пін перед видаленням", "Підтвердження видалення акаунту")
+                .setChecked(GominPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete(context)));
+        items.add(SettingsHelper.asSwitchCG(securitySystemPinRow, "Системний пін", "Використовувати системний пін-код")
+                .setChecked(GominPrivacyConfig.INSTANCE.getAllowSystemPasscode(context)));
         items.add(UItem.asShadow(null));
     }
 
     @Override
     protected void onClick(UItem item, View view, int position, float x, float y) {
+        Context context = getContext();
+        if (context == null) return;
+
         if (item.id == geminiSettingsRow) {
             GominPreferencesNavigator.INSTANCE.createGemini(this);
         } else if (item.id == airAlertRegionRow) {
@@ -167,12 +194,119 @@ public class GominSettingsEntry extends UniversalFragment {
             // TODO: Show slide action selector
         }
 
-        // Switches
-        if (item.id >= ghostModeReadMessagesRow && item.id <= ghostModeHideOnlineRow) {
-            // TODO: Toggle ghost mode setting
+        // Ghost Mode switches
+        else if (item.id == ghostModeReadMessagesRow) {
+            GominPrivacyConfig.INSTANCE.setGhostModeReadMessages(context, !GominPrivacyConfig.INSTANCE.getGhostModeReadMessages(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getGhostModeReadMessages(context));
+        } else if (item.id == ghostModeHideTypingRow) {
+            GominPrivacyConfig.INSTANCE.setGhostModeHideTyping(context, !GominPrivacyConfig.INSTANCE.getGhostModeHideTyping(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getGhostModeHideTyping(context));
+        } else if (item.id == ghostModeHideStoryViewsRow) {
+            GominPrivacyConfig.INSTANCE.setGhostModeHideStoryViews(context, !GominPrivacyConfig.INSTANCE.getGhostModeHideStoryViews(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getGhostModeHideStoryViews(context));
+        } else if (item.id == ghostModeHideOnlineRow) {
+            GominPrivacyConfig.INSTANCE.setGhostModeHideOnline(context, !GominPrivacyConfig.INSTANCE.getGhostModeHideOnline(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getGhostModeHideOnline(context));
         }
-        if (item.id >= securityAskBioRow && item.id <= securitySystemPinRow) {
-            // TODO: Toggle security setting
+
+        // Air Alert
+        else if (item.id == airAlertEnabledRow) {
+            GominCoreConfig.INSTANCE.setAirAlertEnabled(context, !GominCoreConfig.INSTANCE.getAirAlertEnabled(context));
+            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getAirAlertEnabled(context));
+            listView.adapter.update(true);
         }
+
+        // Speed Engine
+        else if (item.id == uploadSpeedBoostRow) {
+            GominCoreConfig.INSTANCE.setUploadSpeedBoost(context, !GominCoreConfig.INSTANCE.getUploadSpeedBoost(context));
+            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getUploadSpeedBoost(context));
+        } else if (item.id == slowNetworkModeRow) {
+            GominCoreConfig.INSTANCE.setSlowNetworkMode(context, !GominCoreConfig.INSTANCE.getSlowNetworkMode(context));
+            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getSlowNetworkMode(context));
+        }
+
+        // Camera
+        else if (item.id == cameraDualRow) {
+            GominCameraConfig.INSTANCE.setUseDualCamera(context, !GominCameraConfig.INSTANCE.getUseDualCamera(context));
+            SettingsHelper.updateCheckState(view, GominCameraConfig.INSTANCE.getUseDualCamera(context));
+        }
+
+        // Chat Behavior
+        else if (item.id == autoQuoteRow) {
+            GominChatsConfig.INSTANCE.setAutoQuoteReplies(context, !GominChatsConfig.INSTANCE.getAutoQuoteReplies(context));
+            SettingsHelper.updateCheckState(view, GominChatsConfig.INSTANCE.getAutoQuoteReplies(context));
+        } else if (item.id == deleteForAllRow) {
+            GominMessagesConfig.INSTANCE.setDeleteForAll(context, !GominMessagesConfig.INSTANCE.getDeleteForAll(context));
+            SettingsHelper.updateCheckState(view, GominMessagesConfig.INSTANCE.getDeleteForAll(context));
+        } else if (item.id == keepDeletedMessagesRow) {
+            GominPrivacyConfig.INSTANCE.setKeepDeletedMessages(context, !GominPrivacyConfig.INSTANCE.getKeepDeletedMessages(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getKeepDeletedMessages(context));
+        } else if (item.id == customWallpapersRow) {
+            GominChatsConfig.INSTANCE.setCustomWallpapers(context, !GominChatsConfig.INSTANCE.getCustomWallpapers(context));
+            SettingsHelper.updateCheckState(view, GominChatsConfig.INSTANCE.getCustomWallpapers(context));
+        }
+
+        // Interface
+        else if (item.id == hideStoriesRow) {
+            GominCoreConfig.INSTANCE.setHideStories(context, !GominCoreConfig.INSTANCE.getHideStories(context));
+            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getHideStories(context));
+        }
+
+        // Other
+        else if (item.id == springAnimationRow) {
+            int current = GominCoreConfig.INSTANCE.getSpringAnimation(context);
+            int next = current == GominCoreConfig.ANIMATION_SPRING ? GominCoreConfig.ANIMATION_CLASSIC : GominCoreConfig.ANIMATION_SPRING;
+            GominCoreConfig.INSTANCE.setSpringAnimation(context, next);
+            SettingsHelper.updateCheckState(view, next == GominCoreConfig.ANIMATION_SPRING);
+        }
+
+        // Security
+        else if (item.id == securityAskBioRow) {
+            GominPrivacyConfig.INSTANCE.setAskBiometricsToOpenChat(context, !GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat(context));
+        } else if (item.id == securityBioEncryptedRow) {
+            GominPrivacyConfig.INSTANCE.setAskBiometricsToOpenEncrypted(context, !GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenEncrypted(context));
+        } else if (item.id == securityBioArchiveRow) {
+            GominPrivacyConfig.INSTANCE.setAskBiometricsToOpenArchive(context, !GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenArchive(context));
+        } else if (item.id == securityBioDeleteRow) {
+            GominPrivacyConfig.INSTANCE.setAskPasscodeBeforeDelete(context, !GominPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getAskPasscodeBeforeDelete(context));
+        } else if (item.id == securitySystemPinRow) {
+            GominPrivacyConfig.INSTANCE.setAllowSystemPasscode(context, !GominPrivacyConfig.INSTANCE.getAllowSystemPasscode(context));
+            SettingsHelper.updateCheckState(view, GominPrivacyConfig.INSTANCE.getAllowSystemPasscode(context));
+        }
+    }
+
+    // Helper methods
+    private String getNotificationSoundValue(Context context) {
+        int sound = GominChatsConfig.INSTANCE.getNotificationSound(context);
+        if (sound == GominChatsConfig.NOTIF_SOUND_GOMIN_1) return "Гомін: Маріо";
+        if (sound == GominChatsConfig.NOTIF_SOUND_GOMIN_2) return "Гомін: Сурма";
+        if (sound == GominChatsConfig.NOTIF_SOUND_GOMIN_3) return "Гомін: Дзвіночок";
+        return "Стандартний";
+    }
+
+    private String getDownloadSpeedBoostValue(Context context) {
+        int level = GominCoreConfig.INSTANCE.getDownloadSpeedBoost(context);
+        if (level == GominCoreConfig.BOOST_NONE) return "Вимкнено";
+        if (level == GominCoreConfig.BOOST_AVERAGE) return "Баланс";
+        return "Максимально";
+    }
+
+    private String getDoubleTapActionValue(Context context) {
+        int action = GominMessagesConfig.INSTANCE.getDoubleTapAction(context);
+        if (action == GominMessagesConfig.DOUBLE_TAP_ACTION_REACTION) return "Реакція";
+        if (action == GominMessagesConfig.DOUBLE_TAP_ACTION_REPLY) return "Відповісти";
+        if (action == GominMessagesConfig.DOUBLE_TAP_ACTION_SAVE) return "Зберегти";
+        return "Вимкнено";
+    }
+
+    private String getSlideActionValue(Context context) {
+        int action = GominMessagesConfig.INSTANCE.getMessageSlideAction(context);
+        if (action == GominMessagesConfig.MESSAGE_SLIDE_ACTION_SAVE) return "Зберегти";
+        if (action == GominMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE) return "Перекласти";
+        return "Відповісти";
     }
 }
