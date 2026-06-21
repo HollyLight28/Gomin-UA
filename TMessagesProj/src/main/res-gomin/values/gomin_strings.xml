@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App -->
+    <string name="AppName">Гомін</string>
+    <string name="AppAbout">Гомін — Український Telegram</string>
+
+    <!-- Settings Menu -->
+    <string name="GominSettings">Налаштування Гоміна</string>
+    <string name="GominAbout">Про Гомін</string>
+
+    <!-- Ghost Mode -->
+    <string name="GhostMode_Header">👻 Ghost Mode</string>
+    <string name="GhostMode_ReadMessages">Невидиме читання</string>
+    <string name="GhostMode_ReadMessages_Desc">Читай повідомлення без позначки "прочитано"</string>
+    <string name="GhostMode_HideTyping">Приховати друкування</string>
+    <string name="GhostMode_HideTyping_Desc">Ніхто не бачить коли ти печатаєш</string>
+    <string name="GhostMode_HideStoryViews">Анонімні історії</string>
+    <string name="GhostMode_HideStoryViews_Desc">Перегляди сторіс не відображаються</string>
+    <string name="GhostMode_HideOnline">Прихований онлайн</string>
+    <string name="GhostMode_HideOnline_Desc">Ніхто не бачить що ти в мережі</string>
+
+    <!-- Air Alert -->
+    <string name="AirAlert_Header">🚨 Повітряна тривога</string>
+    <string name="AirAlert_Enabled">Увімкнено</string>
+    <string name="AirAlert_Region">Регіон</string>
+    <string name="AirAlert_Test">Тест</string>
+    <string name="AirAlert_NotSet">Не встановлено</string>
+
+    <!-- Speed Engine -->
+    <string name="SpeedEngine_Header">⚡ Speed Engine</string>
+    <string name="SpeedEngine_Download">Завантаження</string>
+    <string name="SpeedEngine_Upload">Прискорення завантаження</string>
+    <string name="SpeedEngine_Slow">Режим слабкої мережі</string>
+
+    <!-- Camera -->
+    <string name="Camera_Header">📷 Камера</string>
+    <string name="Camera_Dual">Подвійна камера</string>
+    <string name="Camera_Dual_Desc">Використовувати дві камери одночасно</string>
+
+    <!-- Chat Behavior -->
+    <string name="Chats_Header">💬 Поведінка</string>
+    <string name="Chats_AutoQuote">Авто-цитата</string>
+    <string name="Chats_AutoQuote_Desc">Автоматично цитувати при відповіді</string>
+    <string name="Chats_DeleteForAll">Видалити у всіх</string>
+    <string name="Chats_DeleteForAll_Desc">Підтвердження для видалення у всіх</string>
+    <string name="Chats_KeepDeleted">Зберігати видалені</string>
+    <string name="Chats_KeepDeleted_Desc">Не видаляти з локальної БД</string>
+    <string name="Chats_CustomWallpapers">Кастомні шпалери</string>
+    <string name="Chats_CustomWallpapers_Desc">Використовувати преміум шпалери</string>
+
+    <!-- Interface -->
+    <string name="Interface_Header">🎨 Інтерфейс</string>
+    <string name="Interface_HideSearch">Приховати пошук</string>
+    <string name="Interface_HideSearch_Desc">Приховати рядок пошуку</string>
+    <string name="Interface_HideStories">Приховати історії</string>
+    <string name="Interface_HideStories_Desc">Не показувати Stories</string>
+
+    <!-- Other -->
+    <string name="Other_Header">🛠️ Інше</string>
+    <string name="Other_SpringAnimation">Spring анімація</string>
+    <string name="Other_SpringAnimation_Desc">Пружинна анімація переходів</string>
+    <string name="Other_DoubleTap">Подвійний тап</string>
+    <string name="Other_SlideAction">Дія свайпа</string>
+
+    <!-- Security -->
+    <string name="Security_Header">🔒 Безпека</string>
+    <string name="Security_BioChats">Біометрія для чатів</string>
+    <string name="Security_BioChats_Desc">Захист відбитком пальця</string>
+    <string name="Security_BioEncrypted">Біометрія для encrypted</string>
+    <string name="Security_BioEncrypted_Desc">Захист секретних чатів</string>
+    <string name="Security_BioArchive">Біометрія для архіву</string>
+    <string name="Security_BioArchive_Desc">Захист архіву</string>
+    <string name="Security_PinBeforeDelete">Пін перед видаленням</string>
+    <string name="Security_PinBeforeDelete_Desc">Підтвердження видалення акаунту</string>
+    <string name="Security_SystemPin">Системний пін</string>
+    <string name="Security_SystemPin_Desc">Використовувати системний пін-код</string>
+
+    <!-- Notification Sound -->
+    <string name="NotificationSound_Header">🔊 Звук сповіщень</string>
+    <string name="NotificationSound_Default">Стандартний</string>
+    <string name="NotificationSound_Gomin1">Гомін: Маріо</string>
+    <string name="NotificationSound_Gomin2">Гомін: Сурма</string>
+    <string name="NotificationSound_Gomin3">Гомін: Дзвіночок</string>
+
+    <!-- AI -->
+    <string name="AI_Header">🤖 Gomin AI</string>
+    <string name="AI_Settings">Налаштування Gemini</string>
+
+    <!-- Support -->
+    <string name="Support_Title">Підтримка Гоміна</string>
+    <string name="Support_Desc">Допоможи розвитку проєкту</string>
+</resources>
