@@ -1,21 +1,31 @@
-[CURRENT MISSION]: Провірка багів, збірка локальна, налаштування Github Actions з постійним перезаписом останнього релізу, підключення Гомін Налаштувань до UI (чорний фон, іконка bird.svg).
+# Active Context (Gomin-UA)
 
-[COMPLETED ATOMIC STEPS]:
-- Видалено дублювання ресурсів (`AppName`, `AppAbout`) у `values-uk/gomin_strings.xml`.
-- Виявлено критичну проблему з компіляцією Kotlin (`Class kotlin.Unit was compiled with an incompatible version of Kotlin`) через конфлікт версій `kotlin-android` плагіна та `kotlin-stdlib` у великому C++ проєкті.
-- Написано та виконано Python-скрипт (`converter.py`) для автоматичної трансляції 7 файлів `Gomin*Config.kt` на чисту Java (`Gomin*Config.java`).
-- Переписано `GominFeatureHooks.kt` та `GominPreferencesNavigator.kt` на Java.
-- Видалено плагін `kotlin-android` з `build.gradle` (модуль `TMessagesProj`) для забезпечення повної сумісності та стабільності збірки.
-- Зібрано локальну збірку `afatDebug` без жодних помилок (BUILD SUCCESSFUL).
-- Додано векторний файл `bird.xml` (з `bird.svg`) у `res-gomin/drawable/`.
-- Змінено іконку та фон (чорний колір `0xff000000`) пункту меню "Налаштування Гоміна" у `SettingsActivity.java`.
-- Створено `release.yml` для Github Actions, що збирає APK та автоматично перезаписує реліз з тегом `latest`.
+## Current Mission
+The current goal is to ensure the core Gomin settings layout is integrated into the native Telegram UI, to manage hook registrations, verify local build compilation, and establish a framework for porting feature modules sequentially.
 
-[OPEN PROBLEMS]:
-Немає. Локальна збірка успішно пройшла.
+## Completed Steps
+- **Gradle & Kotlin Config Refactoring**: 
+  - Analyzed and resolved critical Kotlin JVM compile compatibility errors (`Class kotlin.Unit compiled with an incompatible version`) by disabling the `kotlin-android` plugin in the `TMessagesProj` build.gradle.
+  - Converted the entire `ua.gomin.messenger.configs` package from Kotlin `object` declarations to standard Java singleton classes with Android `SharedPreferences` interaction.
+- **Java Config Translation**:
+  - Translated 7 configuration files: `GominAppearanceConfig`, `GominCameraConfig`, `GominChatsConfig`, `GominCoreConfig`, `GominExperimentalConfig`, `GominMessagesConfig`, and `GominPrivacyConfig`.
+# CURRENT MISSION
+1. Скласти системний план перенесення функціоналу (Air Alerts, Gomin AI, Ghost Mode, Speed Engine) зі старого Cherrygram-based проекту (Telegram 12.5.0) до нового DrKLO-based проекту (Telegram 12.8.1). [IN_PROGRESS]
 
-[MODIFIED FILES]:
-- `TMessagesProj/src/main/res-gomin/values-uk/gomin_strings.xml` -> Видалено дублікати -> Архітектурний конфлікт ресурсів у Gradle.
-- `TMessagesProj/src/main/java/ua/gomin/messenger/configs/*` -> Переведено на Java -> Обхід багів Kotlin JVM-target у старих Android проектах.
-- `TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java` -> Оновлено `items.add` -> Підключення власного UI з кастомним фоном і іконкою пташки.
-- `.github/workflows/release.yml` -> Створено -> CI/CD пайплайн з одним постійним релізом.
+# COMPLETED ATOMIC STEPS
+- Проаналізовано структуру папок `Gomin` (стара база) та `Gomin-UA` (нова база).
+- Прочитано конфігураційні файли пам'яті `projectBrief.md`, `activeContext.md`, `systemPatterns.md` та `techContext.md`.
+- Досліджено `LocaleController.java` та виявлено причину англійського інтерфейсу: `BuildVars.USE_CLOUD_STRINGS = false`.
+- Виправлено локалізацію: активовано `BuildVars.USE_CLOUD_STRINGS = true` для завантаження хмарних мовних файлів.
+- Створено та успішно інтегровано приватний статичний метод `applyBrandingReplacement` у `LocaleController.java` з регулярними виразами для безпечної заміни "Telegram" на "Гомін" / "Gomin" у методах `getStringInternal`, `getServerString`, `formatPluralStringComma`, `formatString` та `formatSpannable`.
+- Успішно перевірено компіляцію проекту локально за допомогою Gradle.
+
+# OPEN PROBLEMS
+- Відсутній український переклад для нових фіч у новій базі.
+
+# MODIFIED FILES
+- `.memory/activeContext.md` -> Оновлено поточну місію та кроки аналізу.
+- [TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java): Injected custom item layout row, import bindings, and theme mapping.
+- [TMessagesProj/src/main/java/ua/gomin/messenger/hooks/GominFeatureHooks.java](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/ua/gomin/messenger/hooks/GominFeatureHooks.java): Converted to Java structure with method signatures for feature hooks.
+- [TMessagesProj/src/main/java/ua/gomin/messenger/preferences/GominPreferencesNavigator.java](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/ua/gomin/messenger/preferences/GominPreferencesNavigator.java): Converted to Java navigation dispatcher.
+- [TMessagesProj/src/main/java/ua/gomin/messenger/configs/*](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/ua/gomin/messenger/configs/): Translated configuration files from Kotlin to Java to work around JVM linkage issue.

@@ -1451,6 +1451,8 @@ public class LocaleController {
         }
         if (value == null) {
             value = "LOC_ERR:" + key;
+        } else {
+            value = applyBrandingReplacement(key, value);
         }
         return value;
     }
@@ -1461,6 +1463,38 @@ public class LocaleController {
             int resourceId = ApplicationLoader.applicationContext.getResources().getIdentifier(key, "string", ApplicationLoader.applicationContext.getPackageName());
             if (resourceId != 0) {
                 value = ApplicationLoader.applicationContext.getString(resourceId);
+            }
+        }
+        return applyBrandingReplacement(key, value);
+    }
+
+    private static String applyBrandingReplacement(String key, String value) {
+        if (value == null) {
+            return null;
+        }
+        LocaleController instance = getInstance();
+        Locale currentLocale = (instance != null) ? instance.currentLocale : null;
+        String lang = (currentLocale != null) ? currentLocale.getLanguage() : "en";
+        
+        if ("AppName".equals(key)) {
+            return "uk".equals(lang) ? "Гомін" : "Gomin";
+        } else if ("AppNameBeta".equals(key)) {
+            return "uk".equals(lang) ? "Гомін Beta" : "Gomin Beta";
+        } else if (value.contains("Telegram") || value.contains("telegram") || value.contains("Телеграм") || value.contains("телеграм")) {
+            if ("uk".equals(lang)) {
+                value = value.replaceAll("(?<![@/.])\\bTelegram\\b(?![/.])", "Гомін")
+                             .replaceAll("(?<![@/.])\\btelegram\\b(?![/.])", "гомін")
+                             .replaceAll("(?<![@/.])\\bТелеграм\\b(?![/.])", "Гомін")
+                             .replaceAll("(?<![@/.])\\bтелеграм\\b(?![/.])", "гомін")
+                             .replaceAll("(?<![@/.])\\bТелеграму\\b(?![/.])", "Гоміну")
+                             .replaceAll("(?<![@/.])\\bтелеграму\\b(?![/.])", "гоміну")
+                             .replaceAll("(?<![@/.])\\bТелеграмі\\b(?![/.])", "Гоміні")
+                             .replaceAll("(?<![@/.])\\bтелеграмі\\b(?![/.])", "гоміні")
+                             .replaceAll("(?<![@/.])\\bТелеграмом\\b(?![/.])", "Гоміном")
+                             .replaceAll("(?<![@/.])\\bтелеграмом\\b(?![/.])", "гоміном");
+            } else {
+                value = value.replaceAll("(?<![@/.])\\bTelegram\\b(?![/.])", "Gomin")
+                             .replaceAll("(?<![@/.])\\btelegram\\b(?![/.])", "gomin");
             }
         }
         return value;
@@ -1615,6 +1649,7 @@ public class LocaleController {
                 int resourceId = ApplicationLoader.applicationContext.getResources().getIdentifier(key + "_other", "string", ApplicationLoader.applicationContext.getPackageName());
                 value = ApplicationLoader.applicationContext.getString(resourceId);
             }
+            value = applyBrandingReplacement(param, value);
             value = value.replace("%d", "%1$s");
             value = value.replace("%1$d", "%1$s");
 
@@ -1692,6 +1727,7 @@ public class LocaleController {
                     }
                 }
             }
+            value = applyBrandingReplacement(key, value);
 
             if (getInstance().currentLocale != null) {
                 return String.format(getInstance().currentLocale, value, args);
@@ -1741,6 +1777,7 @@ public class LocaleController {
                     }
                 }
             }
+            value = applyBrandingReplacement(key, value);
 
             SpannableStringBuilder builder = new SpannableStringBuilder(value);
             for (int i = 0; i < args.length; i++) {
