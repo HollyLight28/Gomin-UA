@@ -48,7 +48,7 @@ jobs:
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       run: |
         if [ -n "$SIGNING_KEY" ]; then
-          echo "$SIGNING_KEY" | base64 --decode --ignore-garbage > TMessagesProj/config/release.keystore
+          echo "$SIGNING_KEY" | base64 --decode --ignore-garbage > TMessagesProj/config/release.keystore 2> base64_error.log
         else
           echo "Warning: SIGNING_KEY secret is not set. Standalone build will fallback to gradle.properties."
         fi
@@ -129,6 +129,11 @@ jobs:
           LOG_URL="${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           COMMIT_MSG=$(git log -1 --pretty=%s)
           MESSAGE="⚠️ <b>Гомін.UA Build Notification</b> ❌%0A%0AСтатус: ❌ <b>Помилка</b>%0AГілка: <code>${{ github.ref_name }}</code>%0AКоміт: <code>${COMMIT_MSG}</code>%0A%0A<a href='${LOG_URL}'>🔍 Подивитись логи</a>"
+          if [ -f base64_error.log ] && [ -s base64_error.log ]; then
+            ERROR_CONTENT=$(cat base64_error.log | head -c 500)
+            ERROR_CONTENT_ENCODED=$(python3 -c "import urllib.parse, sys; print(urllib.parse.quote(sys.argv[1]))" "$ERROR_CONTENT")
+            MESSAGE="${MESSAGE}%0A%0A<b>Помилка декодування:</b>%0A<code>${ERROR_CONTENT_ENCODED}</code>"
+          fi
           curl -s -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
             -d "chat_id=${CHAT_ID}" \
             -d "text=${MESSAGE}" \
