@@ -13803,6 +13803,10 @@ public class MessagesStorage extends BaseController {
             } else {
                 long currentUser = getUserConfig().getClientUserId();
 
+                /** Gomin start */
+                ArrayList<TLRPC.Message> messagesToGhost = new ArrayList<>();
+                /** Gomin end */
+
                 ArrayList<Integer> unknownMessages = new ArrayList<>(messages);
                 ArrayList<Integer> unknownMessagesInTopics = new ArrayList<>(messages);
                 LongSparseArray<Integer[]> dialogsToUpdate = new LongSparseArray<>();
@@ -13827,12 +13831,30 @@ public class MessagesStorage extends BaseController {
                         long did = cursor.longValue(0);
                         int mid = cursor.intValue(5);
                         unknownMessages.remove((Integer) mid);
-                        ArrayList<Integer> mids = messagesByDialogs.get(did);
-                        if (mids == null) {
-                            mids = new ArrayList<>();
-                            messagesByDialogs.put(did, mids);
+                        /** Gomin start */
+                        boolean kept = false;
+                        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && cursor.intValue(3) == 0) {
+                            NativeByteBuffer data = cursor.byteBufferValue(1);
+                            if (data != null) {
+                                TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
+                                data.reuse();
+                                if (message != null) {
+                                    message.flags |= 0x40000000;
+                                    message.dialog_id = did;
+                                    messagesToGhost.add(message);
+                                    kept = true;
+                                }
+                            }
                         }
-                        mids.add(mid);
+                        if (!kept) {
+                            ArrayList<Integer> mids = messagesByDialogs.get(did);
+                            if (mids == null) {
+                                mids = new ArrayList<>();
+                                messagesByDialogs.put(did, mids);
+                            }
+                            mids.add(mid);
+                        }
+                        /** Gomin end */
                         if (did != currentUser) {
                             int read_state = cursor.intValue(2);
                             if (cursor.intValue(3) == 0) {
@@ -13860,9 +13882,13 @@ public class MessagesStorage extends BaseController {
                                 deletedMessages.add(message);
                             }
                             data.reuse();
-                            if (DialogObject.isEncryptedDialog(did) || deleteFiles) {
+                            /** Gomin start */
+                            if (!kept && (DialogObject.isEncryptedDialog(did) || deleteFiles)) {
+                            /** Gomin end */
                                 addFilesToDelete(message, filesToDelete, idsToDelete, namesToDelete, false);
+                            /** Gomin start */
                             }
+                            /** Gomin end */
 
                             if (did == currentUser) {
                                 long savedDialogId = MessageObject.getSavedDialogId(currentUser, message);
@@ -13938,6 +13964,33 @@ public class MessagesStorage extends BaseController {
                 cursor = null;
 
                 database.beginTransaction();
+                /** Gomin start */
+                if (messagesToGhost != null && !messagesToGhost.isEmpty()) {
+                    SQLitePreparedStatement updateV2 = database.executeFast("UPDATE messages_v2 SET data = ? WHERE mid = ? AND uid = ?");
+                    SQLitePreparedStatement updateTopics = database.executeFast("UPDATE messages_topics SET data = ? WHERE mid = ? AND uid = ?");
+                    for (int i = 0; i < messagesToGhost.size(); i++) {
+                        TLRPC.Message message = messagesToGhost.get(i);
+                        NativeByteBuffer outData = new NativeByteBuffer(message.getObjectSize());
+                        message.serializeToStream(outData);
+
+                        updateV2.requery();
+                        updateV2.bindByteBuffer(1, outData);
+                        updateV2.bindInteger(2, message.id);
+                        updateV2.bindLong(3, message.dialog_id);
+                        updateV2.step();
+
+                        updateTopics.requery();
+                        updateTopics.bindByteBuffer(1, outData);
+                        updateTopics.bindInteger(2, message.id);
+                        updateTopics.bindLong(3, message.dialog_id);
+                        updateTopics.step();
+
+                        outData.reuse();
+                    }
+                    updateV2.dispose();
+                    updateTopics.dispose();
+                }
+                /** Gomin end */
                 for (int i = 0; i < 4; i++) {
                     if (i == 0) {
                         if (dialogId != 0) {
@@ -14645,9 +14698,22 @@ public class MessagesStorage extends BaseController {
                 cursor = null;
             }
 
-            database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE uid = %d AND mid <= %d", -channelId, mid)).stepThis().dispose();
-            database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND mid <= %d", -channelId, mid)).stepThis().dispose();
-            database.executeFast(String.format(Locale.US, "DELETE FROM media_v4 WHERE uid = %d AND mid <= %d", -channelId, mid)).stepThis().dispose();
+            /** Gomin start */
+            if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted()) {
+                database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE uid = %d AND mid <= %d AND out != 0", -channelId,
+                        mid)).stepThis().dispose();
+                database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND mid <= %d AND out != 0", -
+                        channelId, mid)).stepThis().dispose();
+                database.executeFast(String.format(Locale.US, "DELETE FROM media_v4 WHERE uid = %d AND mid <= %d AND mid NOT IN (SELECT mid FROM messages_v2 WHERE uid = %d)", -channelId, mid, -channelId)).stepThis().dispose();
+            } else {
+                database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE uid = %d AND mid <= %d", -channelId, mid)).
+                        stepThis().dispose();
+                database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND mid <= %d", -channelId, mid)).
+                        stepThis().dispose();
+                database.executeFast(String.format(Locale.US, "DELETE FROM media_v4 WHERE uid = %d AND mid <= %d", -channelId, mid)).
+                        stepThis().dispose();
+            }
+            /** Gomin end */
             database.executeFast(String.format(Locale.US, "UPDATE media_counts_v2 SET old = 1 WHERE uid = %d", -channelId)).stepThis().dispose();
             database.executeFast(String.format(Locale.US, "UPDATE media_counts_topics SET old = 1 WHERE uid = %d", -channelId)).stepThis().dispose();
             updateWidgets(dialogsIds);

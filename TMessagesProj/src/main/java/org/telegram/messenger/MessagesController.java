@@ -10247,7 +10247,9 @@ public class MessagesController extends BaseController implements NotificationCe
                         }
 
                         TL_account.updateStatus req = new TL_account.updateStatus();
-                        req.offline = false;
+                        /** Gomin start */
+                        req.offline = ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldHideOnline();
+                        /** Gomin end */
                         statusRequest = getConnectionsManager().sendRequest(req, (response, error) -> {
                             if (error == null) {
                                 lastStatusUpdateTime = System.currentTimeMillis();
@@ -11096,6 +11098,11 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean sendTyping(long dialogId, long threadMsgId, int action, String emojicon, int classGuid) {
+        /** Gomin start */
+        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldHideTyping()) {
+            return false;
+        }
+        /** Gomin end */
         if (action < 0 || action >= sendingTypings.length || dialogId == 0) {
             return false;
         }
@@ -14102,6 +14109,11 @@ public class MessagesController extends BaseController implements NotificationCe
 
     public void markMentionMessageAsRead(int mid, long channelId, long did) {
         getMessagesStorage().markMentionMessageAsRead(-channelId, mid, did);
+        /** Gomin start */
+        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldGhostRead()) {
+            return;
+        }
+        /** Gomin end */
         if (channelId != 0) {
             TLRPC.TL_channels_readMessageContents req = new TLRPC.TL_channels_readMessageContents();
             req.channel = getInputChannel(channelId);
@@ -14149,6 +14161,14 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public void markMessageAsRead2(long dialogId, int mid, TLRPC.InputChannel inputChannel, int ttl, long taskId, boolean createDeleteTask) {
+        /** Gomin start */
+        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldGhostRead()) {
+            if (taskId != 0) {
+                getMessagesStorage().removePendingTask(taskId);
+            }
+            return;
+        }
+        /** Gomin end */
         if (mid == 0 || ttl < 0) {
             return;
         }
@@ -14226,6 +14246,11 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     private void completeReadTask(ReadTask task) {
+        /** Gomin start */
+        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldGhostRead()) {
+            return;
+        }
+        /** Gomin end */
         if (task.replyId != 0 && task.monoForumPeerId == 0) {
             TLRPC.TL_messages_readDiscussion req = new TLRPC.TL_messages_readDiscussion();
             req.msg_id = (int) task.replyId;
@@ -19537,7 +19562,11 @@ public class MessagesController extends BaseController implements NotificationCe
                             if (dialog == null && chat instanceof TLRPC.TL_channel && !chat.left) {
                                 Utilities.stageQueue.postRunnable(() -> getChannelDifference(update.channel_id, 1, 0, null));
                             } else if (ChatObject.isNotInChat(chat) && dialog != null && (promoDialog == null || promoDialog.id != dialog.id)) {
-                                deleteDialog(dialog.id, 0);
+                                /** Gomin start */
+                                if (!ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted()) {
+                                    deleteDialog(dialog.id, 0);
+                                }
+                                /** Gomin end */
                             }
                             if (chat instanceof TLRPC.TL_channelForbidden || chat.kicked) {
                                 ChatObject.Call call = getGroupCall(chat.id, false);
@@ -19576,7 +19605,11 @@ public class MessagesController extends BaseController implements NotificationCe
                             }
                             TLRPC.Dialog dialog = dialogs_dict.get(-chat.id);
                             if (dialog != null) {
-                                deleteDialog(dialog.id, 0);
+                                /** Gomin start */
+                                if (!ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted()) {
+                                    deleteDialog(dialog.id, 0);
+                                }
+                                /** Gomin end */
                             }
                         }
                         updateMask |= UPDATE_MASK_CHAT;
