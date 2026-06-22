@@ -30,11 +30,15 @@ jobs:
       with:
         java-version: '17'
         distribution: 'temurin'
+        cache: gradle
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
         packages: 'build-tools;35.0.0 ndk;27.2.12479018'
+
+    - name: Accept Android SDK licenses
+      run: yes | sdkmanager --licenses || true
 
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
@@ -46,7 +50,7 @@ jobs:
           --stacktrace \
           -Dorg.gradle.workers.max=2 \
           -Pandroid.handler.cmake.parallelJobs=2 \
-          -Dorg.gradle.jvmargs="-Xmx7g -XX:+HeapDumpOnOutOfMemoryError -XX:MaxMetaspaceSize=1g"
+          -Dorg.gradle.jvmargs="-Xmx4g -XX:+HeapDumpOnOutOfMemoryError -XX:MaxMetaspaceSize=1g"
 
     - name: Find and Prepare APK
       id: find_apk

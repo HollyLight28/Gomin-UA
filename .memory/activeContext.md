@@ -11,6 +11,7 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
   - Translated 7 configuration files: `GominAppearanceConfig`, `GominCameraConfig`, `GominChatsConfig`, `GominCoreConfig`, `GominExperimentalConfig`, `GominMessagesConfig`, and `GominPrivacyConfig`.
 # CURRENT MISSION
 1. Скласти системний план перенесення функціоналу (Air Alerts, Gomin AI, Ghost Mode, Speed Engine) зі старого Cherrygram-based проекту (Telegram 12.5.0) до нового DrKLO-based проекту (Telegram 12.8.1). [IN_PROGRESS]
+2. Вирішити проблему падіння CI/CD збірок на GitHub Actions. [IN_PROGRESS]
 
 # COMPLETED ATOMIC STEPS
 - Проаналізовано структуру папок `Gomin` (стара база) та `Gomin-UA` (нова база).
@@ -18,10 +19,13 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
 - Досліджено `LocaleController.java` та виявлено причину англійського інтерфейсу: `BuildVars.USE_CLOUD_STRINGS = false`.
 - Виправлено локалізацію: активовано `BuildVars.USE_CLOUD_STRINGS = true` для завантаження хмарних мовних файлів.
 - Створено та успішно інтегровано приватний статичний метод `applyBrandingReplacement` у `LocaleController.java` з регулярними виразами для безпечної заміни "Telegram" на "Гомін" / "Gomin" у методах `getStringInternal`, `getServerString`, `formatPluralStringComma`, `formatString` та `formatSpannable`.
-- Успішно перевірено компіляцію проекту локально за допомогою Gradle.
+- Успішно перевірено компіляцію проекту локально за допомогою Gradle (Java-частина збирається без помилок за 3хв 39с).
+- Діагностовано причину падіння GitHub Actions (конфлікт двох workflow, брак пам'яті на раннері через `-Xmx7g` і збій застарілих екшенів).
+- Оптимізовано `.github/workflows/build.yml`: увімкнено кешування Gradle, додано автоматичне ліцензування Android SDK та знижено ліміт JVM heap до `-Xmx4g` для запобігання OOM крашу.
 
 # OPEN PROBLEMS
 - Відсутній український переклад для нових фіч у новій базі.
+- Очікується підтвердження користувача на видалення застарілого дубліката `.github/workflows/release.yml`.
 
 # MODIFIED FILES
 - `.memory/activeContext.md` -> Оновлено поточну місію та кроки аналізу.
