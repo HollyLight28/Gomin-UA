@@ -3,8 +3,15 @@ package ua.gomin.messenger.preferences;
 import android.content.Context;
 import android.view.View;
 
+import org.telegram.messenger.R;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
+
+import ua.gomin.messenger.configs.GominChatsConfig;
+import ua.gomin.messenger.configs.GominCoreConfig;
+import ua.gomin.messenger.configs.GominMessagesConfig;
+import ua.gomin.messenger.configs.GominPrivacyConfig;
+import ua.gomin.messenger.preferences.GominPreferencesNavigator;
 import org.telegram.ui.Components.UniversalFragment;
 
 import java.util.ArrayList;
@@ -88,7 +95,7 @@ public class GominSettingsEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         // 👻 Ghost Mode
-        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.ghost_solar, "👻 Ghost Mode"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_secret, "👻 Ghost Mode"));
         items.add(SettingsHelper.asSwitchCG(ghostModeReadMessagesRow, "Невидиме читання", "Читай повідомлення без позначки прочитано")
                 .setChecked(GominPrivacyConfig.INSTANCE.getGhostModeReadMessages(context)));
         items.add(SettingsHelper.asSwitchCG(ghostModeHideTypingRow, "Приховати друкування", "Ніхто не бачить коли ти печатаєш")
@@ -100,7 +107,7 @@ public class GominSettingsEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         // 🚨 Повітряна тривога
-        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_bell_mute_solar, "🚨 Повітряна тривога"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_notifications, "🚨 Повітряна тривога"));
         items.add(SettingsHelper.asSwitchCG(airAlertEnabledRow, "Увімкнено", null)
                 .setChecked(GominCoreConfig.INSTANCE.getAirAlertEnabled(context)));
         if (GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
@@ -143,7 +150,7 @@ public class GominSettingsEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         // 🎨 Інтерфейс
-        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.settings_devices, "🎨 Інтерфейс"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_palette, "🎨 Інтерфейс"));
         items.add(SettingsHelper.asSwitchCG(hideSearchBarRow, "Приховати пошук", "Приховати рядок пошуку")
                 .setChecked(false));
         items.add(SettingsHelper.asSwitchCG(hideStoriesRow, "Приховати історії", "Не показувати Stories")
@@ -159,7 +166,7 @@ public class GominSettingsEntry extends UniversalFragment {
         items.add(UItem.asShadow(null));
 
         // 🔒 Безпека
-        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.settings_security, "🔒 Безпека"));
+        items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_stealth_locked, "🔒 Безпека"));
         items.add(SettingsHelper.asSwitchCG(securityAskBioRow, "Біометрія для чатів", "Захист відбитком пальця")
                 .setChecked(GominPrivacyConfig.INSTANCE.getAskBiometricsToOpenChat(context)));
         items.add(SettingsHelper.asSwitchCG(securityBioEncryptedRow, "Біометрія для encrypted", "Захист секретних чатів")
@@ -308,5 +315,10 @@ public class GominSettingsEntry extends UniversalFragment {
         if (action == GominMessagesConfig.MESSAGE_SLIDE_ACTION_SAVE) return "Зберегти";
         if (action == GominMessagesConfig.MESSAGE_SLIDE_ACTION_TRANSLATE) return "Перекласти";
         return "Відповісти";
+    }
+
+    @Override
+    protected boolean onLongClick(UItem item, View view, int position, float x, float y) {
+        return false;
     }
 }

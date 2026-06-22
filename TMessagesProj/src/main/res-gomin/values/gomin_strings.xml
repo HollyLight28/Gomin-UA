@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- App -->
-    <string name="AppName">Гомін</string>
-    <string name="AppAbout">Гомін — Український Telegram</string>
 
     <!-- Settings Menu -->
     <string name="GominSettings">Налаштування Гоміна</string>
