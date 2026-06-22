@@ -222,18 +222,18 @@
     <string name="CheckYourNewEmailSubtitle">Введіть код, який ми щойно надіслали на вашу нову е-пошту %1$s.</string>
     <string name="LoginOrSingInWithGoogle">або</string>
     <!--Intro view-->
-    <string name="Page1Title">Telegram</string>
+    <string name="Page1Title">Гомін</string>
     <string name="Page2Title">Швидкий</string>
     <string name="Page3Title">Безплатний</string>
     <string name="Page4Title">Захищений</string>
     <string name="Page5Title">Потужний</string>
     <string name="Page6Title">Хмарний</string>
     <string name="Page1Message">**Найшвидший** месенджер у світі.\n**Безплатний** і **захищений**.</string>
-    <string name="Page2Message">**Telegram** доставляє повідомлення\nшвидше за всі інші застосунки.</string>
-    <string name="Page3Message">У **Telegram** можна безплатно зберігати\nскільки завгодно повідомлень і медіафайлів.</string>
-    <string name="Page4Message">**Telegram** оберігає ваші повідомлення\nвід хакерських атак.</string>
-    <string name="Page5Message">**Telegram** не обмежує вас\nу розмірі чатів і медіа.</string>
-    <string name="Page6Message">**Telegram** надає вам доступ до\nповідомлень з безлічі пристроїв.</string>
+    <string name="Page2Message">**Гомін** доставляє повідомлення\nшвидше за всі інші застосунки.</string>
+    <string name="Page3Message">У **Гомін** можна безплатно зберігати\nскільки завгодно повідомлень і медіафайлів.</string>
+    <string name="Page4Message">**Гомін** оберігає ваші повідомлення\nвід хакерських атак.</string>
+    <string name="Page5Message">**Гомін** не обмежує вас\nу розмірі чатів і медіа.</string>
+    <string name="Page6Message">**Гомін** надає вам доступ до\nповідомлень з безлічі пристроїв.</string>
     <string name="StartMessaging">Почати спілкування</string>
     <!--date formatters-->
     <string name="formatterBoostExpired">dd MMM yyyy</string>
