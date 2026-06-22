@@ -2400,25 +2400,14 @@ public class AndroidUtilities {
         return result;
     }
 
+    /** Gomin start */
     public static Typeface getTypeface(String assetPath) {
         synchronized (typefaceCache) {
             if (!typefaceCache.containsKey(assetPath)) {
                 try {
-                    Typeface t;
-                    if (Build.VERSION.SDK_INT >= 26) {
-                        Typeface.Builder builder = new Typeface.Builder(ApplicationLoader.applicationContext.getAssets(), assetPath);
-                        if (assetPath.contains("rextrabold")) {
-                            builder.setWeight(800);
-                        }
-                        if (assetPath.contains("medium") || assetPath.contains("rbold")) {
-                            builder.setWeight(700);
-                        }
-                        if (assetPath.contains("italic")) {
-                            builder.setItalic(true);
-                        }
-                        t = builder.build();
-                    } else {
-                        t = Typeface.createFromAsset(ApplicationLoader.applicationContext.getAssets(), assetPath);
+                    Typeface t = ua.gomin.messenger.helpers.ui.GominFontHelper.getTypeface(assetPath);
+                    if (t == null) {
+                        t = Typeface.DEFAULT;
                     }
                     typefaceCache.put(assetPath, t);
                 } catch (Exception e) {
@@ -2431,6 +2420,7 @@ public class AndroidUtilities {
             return typefaceCache.get(assetPath);
         }
     }
+    /** Gomin end */
 
     public static boolean isWaitingForSms() {
         boolean value;

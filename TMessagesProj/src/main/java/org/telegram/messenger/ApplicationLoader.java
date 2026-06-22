@@ -289,6 +289,10 @@ public class ApplicationLoader extends Application {
 
         super.onCreate();
 
+        /** Gomin start */
+        ua.gomin.messenger.helpers.ui.GominFontHelper.init(this);
+        /** Gomin end */
+
         if (BuildVars.LOGS_ENABLED) {
             FileLog.d("app start time = " + (startTime = SystemClock.elapsedRealtime()));
             try {
