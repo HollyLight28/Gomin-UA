@@ -26,13 +26,14 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
 - Проведено безпековий рефакторинг підпису додатку:
   - Вилучено `release.keystore` з індексу Git та додано до `.gitignore`, щоб запобігти витоку приватного ключа.
   - Оновлено [TMessagesProj_AppStandalone/build.gradle](file:///G:/Code/Java/Gomin-UA/TMessagesProj_AppStandalone/build.gradle) для безпечного зчитування паролів підпису з змінних оточення (з безпечним фолбеком на dummy-значення для локального білду).
-  - Оновлено [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) для динамічного декодування Base64 ключа підпису (`SIGNING_KEY`) з використанням прапорця `--ignore-garbage`, щоб ігнорувати пробіли та переноси рядків, та впорскування паролів через секрети GitHub.
+  - Оновлено [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) для динамічного декодування Base64 ключа підпису (`SIGNING_KEY`) за допомогою інлайн Python-скрипта для ігнорування будь-яких пробілів, переносів рядків та автовиправлення паддінгу.
 
 # OPEN PROBLEMS
 - Відсутній український переклад для нових фіч у новій базі.
 
 # MODIFIED FILES
 - `.memory/activeContext.md` -> Оновлено поточну місію та кроки аналізу.
+- [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) -> Замінено bash-декодування на Python-скрипт для стійкості до брудного Base64.
 - [TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/org/telegram/ui/SettingsActivity.java): Injected custom item layout row, import bindings, and theme mapping.
 - [TMessagesProj/src/main/java/ua/gomin/messenger/hooks/GominFeatureHooks.java](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/ua/gomin/messenger/hooks/GominFeatureHooks.java): Converted to Java structure with method signatures for feature hooks.
 - [TMessagesProj/src/main/java/ua/gomin/messenger/preferences/GominPreferencesNavigator.java](file:///g:/Code/Java/Gomin-UA/TMessagesProj/src/main/java/ua/gomin/messenger/preferences/GominPreferencesNavigator.java): Converted to Java navigation dispatcher.

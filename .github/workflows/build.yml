@@ -47,11 +47,28 @@ jobs:
       env:
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       run: |
-        if [ -n "$SIGNING_KEY" ]; then
-          echo "$SIGNING_KEY" | base64 --decode --ignore-garbage > TMessagesProj/config/release.keystore 2> base64_error.log
-        else
-          echo "Warning: SIGNING_KEY secret is not set. Standalone build will fallback to gradle.properties."
-        fi
+        python3 -c "
+        import os, base64
+        signing_key = os.environ.get('SIGNING_KEY', '')
+        if signing_key:
+            cleaned_key = ''.join(signing_key.split())
+            missing_padding = len(cleaned_key) % 4
+            if missing_padding:
+                cleaned_key += '=' * (4 - missing_padding)
+            try:
+                decoded_bytes = base64.b64decode(cleaned_key)
+                os.makedirs('TMessagesProj/config', exist_ok=True)
+                with open('TMessagesProj/config/release.keystore', 'wb') as f:
+                    f.write(decoded_bytes)
+                print('Keystore decoded successfully!')
+            except Exception as e:
+                with open('base64_error.log', 'w') as err_f:
+                    err_f.write(str(e))
+                print(f'Error decoding: {e}')
+                exit(1)
+        else:
+            print('Warning: SIGNING_KEY secret is not set.')
+        " 2> base64_error.log
 
     - name: Build Gomin (Universal APK + Release)
       env:
