@@ -43,7 +43,21 @@ jobs:
     - name: Grant execute permission for gradlew
       run: chmod +x gradlew
 
+    - name: Decode Keystore
+      env:
+        SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
+      run: |
+        if [ -n "$SIGNING_KEY" ]; then
+          echo "$SIGNING_KEY" | base64 --decode > TMessagesProj/config/release.keystore
+        else
+          echo "Warning: SIGNING_KEY secret is not set. Standalone build will fallback to gradle.properties."
+        fi
+
     - name: Build Gomin (Universal APK + Release)
+      env:
+        RELEASE_STORE_PASSWORD: ${{ secrets.RELEASE_STORE_PASSWORD }}
+        RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+        RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
       run: |
         ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone \
           --no-daemon \

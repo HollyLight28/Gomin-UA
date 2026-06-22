@@ -11,7 +11,7 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
   - Translated 7 configuration files: `GominAppearanceConfig`, `GominCameraConfig`, `GominChatsConfig`, `GominCoreConfig`, `GominExperimentalConfig`, `GominMessagesConfig`, and `GominPrivacyConfig`.
 # CURRENT MISSION
 1. Скласти системний план перенесення функціоналу (Air Alerts, Gomin AI, Ghost Mode, Speed Engine) зі старого Cherrygram-based проекту (Telegram 12.5.0) до нового DrKLO-based проекту (Telegram 12.8.1). [IN_PROGRESS]
-2. Вирішити проблему падіння CI/CD збірок на GitHub Actions. [IN_PROGRESS]
+2. Вирішити проблему падіння CI/CD збірок на GitHub Actions. [COMPLETED]
 
 # COMPLETED ATOMIC STEPS
 - Проаналізовано структуру папок `Gomin` (стара база) та `Gomin-UA` (нова база).
@@ -22,10 +22,14 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
 - Успішно перевірено компіляцію проекту локально за допомогою Gradle (Java-частина збирається без помилок за 3хв 39с).
 - Діагностовано причину падіння GitHub Actions (конфлікт двох workflow, брак пам'яті на раннері через `-Xmx7g` і збій застарілих екшенів).
 - Оптимізовано `.github/workflows/build.yml`: увімкнено кешування Gradle, додано автоматичне ліцензування Android SDK та знижено ліміт JVM heap до `-Xmx4g` для запобігання OOM крашу.
+- Видалено дублюючий та багнутий workflow-файл `.github/workflows/release.yml`.
+- Проведено безпековий рефакторинг підпису додатку:
+  - Вилучено `release.keystore` з індексу Git та додано до `.gitignore`, щоб запобігти витоку приватного ключа.
+  - Оновлено [TMessagesProj_AppStandalone/build.gradle](file:///G:/Code/Java/Gomin-UA/TMessagesProj_AppStandalone/build.gradle) для безпечного зчитування паролів підпису з системних змінних оточення (з безпечним фолбеком на dummy-значення для локального білду).
+  - Оновлено [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) для динамічного декодування Base64 ключа підпису (`SIGNING_KEY`) та впорскування паролів через секрети GitHub.
 
 # OPEN PROBLEMS
 - Відсутній український переклад для нових фіч у новій базі.
-- Очікується підтвердження користувача на видалення застарілого дубліката `.github/workflows/release.yml`.
 
 # MODIFIED FILES
 - `.memory/activeContext.md` -> Оновлено поточну місію та кроки аналізу.
