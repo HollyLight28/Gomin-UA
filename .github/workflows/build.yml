@@ -48,7 +48,7 @@ jobs:
         SIGNING_KEY: ${{ secrets.SIGNING_KEY }}
       run: |
         if [ -n "$SIGNING_KEY" ]; then
-          echo "$SIGNING_KEY" | base64 --decode > TMessagesProj/config/release.keystore
+          echo "$SIGNING_KEY" | base64 --decode --ignore-garbage > TMessagesProj/config/release.keystore
         else
           echo "Warning: SIGNING_KEY secret is not set. Standalone build will fallback to gradle.properties."
         fi

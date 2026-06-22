@@ -25,8 +25,8 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
 - Видалено дублюючий та багнутий workflow-файл `.github/workflows/release.yml`.
 - Проведено безпековий рефакторинг підпису додатку:
   - Вилучено `release.keystore` з індексу Git та додано до `.gitignore`, щоб запобігти витоку приватного ключа.
-  - Оновлено [TMessagesProj_AppStandalone/build.gradle](file:///G:/Code/Java/Gomin-UA/TMessagesProj_AppStandalone/build.gradle) для безпечного зчитування паролів підпису з системних змінних оточення (з безпечним фолбеком на dummy-значення для локального білду).
-  - Оновлено [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) для динамічного декодування Base64 ключа підпису (`SIGNING_KEY`) та впорскування паролів через секрети GitHub.
+  - Оновлено [TMessagesProj_AppStandalone/build.gradle](file:///G:/Code/Java/Gomin-UA/TMessagesProj_AppStandalone/build.gradle) для безпечного зчитування паролів підпису з змінних оточення (з безпечним фолбеком на dummy-значення для локального білду).
+  - Оновлено [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) для динамічного декодування Base64 ключа підпису (`SIGNING_KEY`) з використанням прапорця `--ignore-garbage`, щоб ігнорувати пробіли та переноси рядків, та впорскування паролів через секрети GitHub.
 
 # OPEN PROBLEMS
 - Відсутній український переклад для нових фіч у новій базі.
