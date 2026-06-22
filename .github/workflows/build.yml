@@ -60,7 +60,7 @@ jobs:
                 os.makedirs('TMessagesProj/config', exist_ok=True)
                 with open('TMessagesProj/config/release.keystore', 'wb') as f:
                     f.write(decoded_bytes)
-                print('Keystore decoded successfully!')
+                print(f'Keystore decoded successfully! Cleaned Base64: {len(cleaned_key)} chars, Decoded size: {len(decoded_bytes)} bytes (expected ~2623 bytes)')
             except Exception as e:
                 with open('base64_error.log', 'w') as err_f:
                     err_f.write(str(e))

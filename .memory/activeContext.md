@@ -27,6 +27,7 @@ The current goal is to ensure the core Gomin settings layout is integrated into 
   - Вилучено `release.keystore` з індексу Git та додано до `.gitignore`, щоб запобігти витоку приватного ключа.
   - Оновлено [TMessagesProj_AppStandalone/build.gradle](file:///G:/Code/Java/Gomin-UA/TMessagesProj_AppStandalone/build.gradle) для безпечного зчитування паролів підпису з змінних оточення (з безпечним фолбеком на dummy-значення для локального білду).
   - Оновлено [.github/workflows/build.yml](file:///G:/Code/Java/Gomin-UA/.github/workflows/build.yml) для динамічного декодування Base64 ключа підпису (`SIGNING_KEY`) за допомогою інлайн Python-скрипта для ігнорування будь-яких пробілів, переносів рядків та автовиправлення паддінгу.
+  - Додано діагностичне виведення розміру декодованого ключа підпису в build.yml для відстеження можливого обрізання секрету при копіюванні.
 
 # OPEN PROBLEMS
 - Відсутній український переклад для нових фіч у новій базі.
