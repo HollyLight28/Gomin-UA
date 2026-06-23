@@ -19,8 +19,6 @@ import org.telegram.ui.Components.UniversalFragment;
 import java.util.ArrayList;
 
 import ua.gomin.messenger.configs.GominCameraConfig;
-import ua.gomin.messenger.configs.GominChatsConfig;
-import ua.gomin.messenger.configs.GominCoreConfig;
 
 /**
  * Головна сторінка налаштувань Гоміна.
@@ -30,9 +28,6 @@ public class GominSettingsEntry extends UniversalFragment {
     // Row IDs
     private final int supportCardRow = 0;
     private final int aboutRow = 1;
-
-    // Profile
-    private final int myProfileRow = 5;
 
     // Gomin AI
     private final int geminiSettingsRow = 10;
@@ -59,8 +54,11 @@ public class GominSettingsEntry extends UniversalFragment {
     private final int cameraDualRow = 60;
 
     // Chat Behavior
-    private final int doubleTapRow = 70;
-    private final int slideActionRow = 71;
+    private final int autoQuoteRow = 70;
+    private final int deleteForAllRow = 71;
+    private final int keepDeletedMessagesRow = 72;
+    private final int doubleTapRow = 74;
+    private final int slideActionRow = 75;
 
     // Security
     private final int securityAskBioRow = 80;
@@ -89,14 +87,6 @@ public class GominSettingsEntry extends UniversalFragment {
 
         // Support Card
         items.add(UItem.asCustom(supportCardRow, null));
-        items.add(UItem.asShadow(null));
-
-        /** Gomin start — Profile access */
-        items.add(SettingsHelper.asHeaderWithIcon(context, org.telegram.messenger.R.drawable.msg_contact, "👤 Мій Профіль"));
-        items.add(UItem.asButton(myProfileRow, "Мій Профіль", "Відкрити ваш профіль"));
-        items.add(UItem.asShadow(null));
-        /** Gomin end */
-
         // 🤖 GOMIN AI
         items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_bot, "🤖 Gomin AI"));
         items.add(UItem.asButton(geminiSettingsRow, "Налаштування нейромережі", "Управління токенами та пресетами"));

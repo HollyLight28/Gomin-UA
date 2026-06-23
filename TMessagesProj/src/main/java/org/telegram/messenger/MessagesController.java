@@ -22775,6 +22775,11 @@ public class MessagesController extends BaseController implements NotificationCe
     }
 
     public boolean storiesEnabled() {
+        /** Gomin start */
+        if (ua.gomin.messenger.configs.GominCoreConfig.INSTANCE.getHideStories(ApplicationLoader.applicationContext)) {
+            return false;
+        }
+        /** Gomin end */
         switch (storiesPosting) {
             case "premium":
                 return getUserConfig().isPremium();

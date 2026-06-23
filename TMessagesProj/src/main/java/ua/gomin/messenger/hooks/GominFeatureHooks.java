@@ -1,6 +1,7 @@
 package ua.gomin.messenger.hooks;
 
 import org.telegram.messenger.ApplicationLoader;
+import ua.gomin.messenger.configs.GominMessagesConfig;
 import ua.gomin.messenger.configs.GominPrivacyConfig;
 
 /**
@@ -30,6 +31,10 @@ public class GominFeatureHooks {
 
     public boolean shouldHideStoryViews() {
         return GominPrivacyConfig.INSTANCE.getGhostModeHideStoryViews(ApplicationLoader.applicationContext);
+    }
+
+    public boolean shouldDefaultDeleteForAll() {
+        return GominMessagesConfig.INSTANCE.getDeleteForAll(ApplicationLoader.applicationContext);
     }
     /** Gomin end */
 }

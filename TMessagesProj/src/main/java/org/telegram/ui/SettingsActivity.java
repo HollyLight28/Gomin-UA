@@ -689,6 +689,9 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
         }
 
         items.add(SettingCell.Factory.of(100, 0xff000000, 0xff000000, R.drawable.bird, "Налаштування Гоміна", "Тюнінг, приватність, вигляд"));
+        /** Gomin start — Profile access in global settings */
+        items.add(SettingCell.Factory.of(101, 0xff1e88e5, 0xff1565c0, R.drawable.msg_contact, "👤 Мій Профіль", "Відкрити ваш профіль"));
+        /** Gomin end */
         items.add(SettingCell.Factory.of(1, IconBackgroundColors.BLUE.top, IconBackgroundColors.BLUE.bottom, R.drawable.settings_account, getString(R.string.SettingsAccount), getString(R.string.SettingsAccountInfo)));
         items.add(SettingCell.Factory.of(2, IconBackgroundColors.ORANGE.top, IconBackgroundColors.ORANGE.bottom, R.drawable.settings_chat, getString(R.string.SettingsChat), getString(R.string.SettingsChatInfo)));
         items.add(SettingCell.Factory.of(3, IconBackgroundColors.GREEN.top, IconBackgroundColors.GREEN.bottom, R.drawable.settings_privacy, getString(R.string.SettingsPrivacySecurity), getString(R.string.SettingsPrivacySecurityInfo)));
@@ -813,6 +816,14 @@ public class SettingsActivity extends BaseFragment implements NotificationCenter
             case 100:
                 presentSettingFragment(new GominSettingsEntry());
                 break;
+            /** Gomin start */
+            case 101:
+                Bundle args = new Bundle();
+                args.putLong("user_id", org.telegram.messenger.UserConfig.getInstance(currentAccount).getClientUserId());
+                args.putBoolean("my_profile", true);
+                presentSettingFragment(new ProfileActivity(args));
+                break;
+            /** Gomin end */
             case 1:
                 presentSettingFragment(new UserInfoActivity());
                 break;

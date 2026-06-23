@@ -5639,11 +5639,27 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
     }
 
+    /** Gomin start — Dynamic search field height based on user preference */
+    private boolean shouldHideHomeSearchField() {
+        android.content.Context ctx = getParentActivity() != null ? getParentActivity() : getContext();
+        return ctx != null
+                && ua.gomin.messenger.configs.GominAppearanceConfig.INSTANCE.getHideSearchFiled(ctx)
+                && searchString == null;
+    }
+
+    private int getSearchFieldReservedHeight() {
+        return shouldHideHomeSearchField() ? 0 : dp(SEARCH_FIELD_HEIGHT);
+    }
+    /** Gomin end */
+
     private int getMaxScrollYOffset() {
+        /** Gomin start */
+        int searchHeight = getSearchFieldReservedHeight();
+        /** Gomin end */
         if (hasStories) {
-            return dp(DialogStoriesCell.HEIGHT_IN_DP) + dp(SEARCH_FIELD_HEIGHT);
+            return dp(DialogStoriesCell.HEIGHT_IN_DP) + searchHeight;
         } else {
-            return dp(SEARCH_FIELD_HEIGHT);
+            return searchHeight;
         }
     }
 
@@ -13695,6 +13711,15 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (fragmentSearchField == null) {
             return;
         }
+
+        /** Gomin start — Force hide search field when user toggled "Приховати пошук" */
+        if (shouldHideHomeSearchField() && animatorSearchVisible.getFloatValue() < 0.01f) {
+            fragmentSearchField.setAlpha(0);
+            fragmentSearchField.setVisibility(View.GONE);
+            animatorSearchButtonVisible.setValue(true, true);
+            return;
+        }
+        /** Gomin end */
 
         final int maxScrollWithoutSearch = getMaxScrollYOffsetWithoutSearch();
         final float alphaByScrollOffset = 1f - MathUtils.clamp((-scrollYOffset - maxScrollWithoutSearch) / dp(SEARCH_FIELD_HEIGHT), 0, 1);

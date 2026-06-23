@@ -88,7 +88,6 @@ ua.gomin.messenger/
 - **Google Play AAB**: `./gradlew bundleAfatRelease`
 - **Встановити Standalone**: `./gradlew installAfatStandalone`
 - **Очистити**: `./gradlew clean`
-- **Тести**: `./gradlew test`
 
 Вимоги: JDK 17, Android SDK 36, NDK 21.4.7075529.
 
@@ -101,7 +100,7 @@ ua.gomin.messenger/
 - Event bus — `NotificationCenter`
 - Threading — `Utilities.globalQueue` / `AndroidUtilities.runOnUIThread`
 - Ресурси — `res-gomin/` з `values-uk/gomin_strings.xml`
-- Кожна фіча має тест
+- Автотести не пишуться через несумісність тестового фреймворку Telegram. Тестування проводиться вручну.
 
 ---
 

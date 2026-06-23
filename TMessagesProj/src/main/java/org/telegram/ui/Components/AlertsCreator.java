@@ -2607,7 +2607,9 @@ public class AlertsCreator {
             revokeTimeLimit = MessagesController.getInstance(account).revokeTimeLimit;
         }
         boolean canDeleteInbox = !secret && user != null && canRevokeInbox && revokeTimeLimit == 0x7fffffff;
-        final boolean[] deleteForAll = new boolean[1];
+        /** Gomin start */
+        final boolean[] deleteForAll = {ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldDefaultDeleteForAll()};
+        /** Gomin end */
         boolean deleteChatForAll = false;
 
         boolean lastMessageIsJoined = false;
@@ -2635,14 +2637,14 @@ public class AlertsCreator {
             final boolean deleteChatForAllFinal = deleteChatForAll;
             if (deleteChatForAll) {
                 if (ChatObject.isChannel(chat) && !chat.megagroup) {
-                    cell[0].setText(getString(R.string.DeleteChannelForAll), "", false, false);
+                    cell[0].setText(getString(R.string.DeleteChannelForAll), "", deleteForAll[0], false);
                 } else {
-                    cell[0].setText(getString(R.string.DeleteGroupForAll), "", false, false);
+                    cell[0].setText(getString(R.string.DeleteGroupForAll), "", deleteForAll[0], false);
                 }
             } else if (clear) {
-                cell[0].setText(LocaleController.formatString(R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", false, false);
+                cell[0].setText(LocaleController.formatString(R.string.ClearHistoryOptionAlso, UserObject.getFirstName(user)), "", deleteForAll[0], false);
             } else {
-                cell[0].setText(LocaleController.formatString(R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", false, false);
+                cell[0].setText(LocaleController.formatString(R.string.DeleteMessagesOptionAlso, UserObject.getFirstName(user)), "", deleteForAll[0], false);
             }
             cell[0].setMultiline(true);
             cell[0].setPadding(LocaleController.isRTL ? dp(16) : dp(8), dp(10), LocaleController.isRTL ? dp(8) : dp(16), dp(10));
@@ -7820,7 +7822,9 @@ public class AlertsCreator {
             }
         }
 
-        final boolean[] deleteForAll = new boolean[1];
+        /** Gomin start */
+        final boolean[] deleteForAll = {ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldDefaultDeleteForAll()};
+        /** Gomin end */
         boolean canRevokeInbox = user != null && MessagesController.getInstance(currentAccount).canRevokePmInbox;
         int revokeTimeLimit;
         if (user != null) {

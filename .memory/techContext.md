@@ -22,8 +22,8 @@
 
 ## 4. Build Targets & Flavors
 The project uses Gradle flavors to manage distribution variants.
-- **Build Command**: `./gradlew assembleAfatStandalone` (Ми завжди локально збираємо Standalone Release збірку).
+- **Build Command**: `./gradlew :TMessagesProj_AppStandalone:assembleAfatRelease` (Ми завжди локально збираємо Standalone Release збірку).
   - Outputs compilation artifacts to: `TMessagesProj_AppStandalone/build/outputs/apk/afat/release/`
 - **Flavor Name**: `Afat` (Commonly stands for All-Flavors-All-Translation configuration, packaging multi-architecture binaries including arm64-v8a, armeabi-v7a, x86, x86_64).
-- **Release Target**: `./gradlew assembleAfatStandalone` (Builds standalone APK with updater capabilities enabled).
+- **Release Target**: `./gradlew :TMessagesProj_AppStandalone:assembleAfatRelease` (Builds standalone APK with updater capabilities enabled).
 - **Google Play Target**: `./gradlew bundleAfatRelease` (Builds Android App Bundle `.aab` for Google Play deployment).

@@ -29,7 +29,7 @@ public class GominMessagesConfig {
     }
 
     public boolean getDeleteForAll(Context context) {
-        return getPrefs(context).getBoolean("deleteForAll", false);
+        return getPrefs(context).getBoolean("deleteForAll", true);
     }
     public int getDoubleTapAction(Context context) {
         return getPrefs(context).getInt("doubleTapAction", DOUBLE_TAP_ACTION_NONE);
