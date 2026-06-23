@@ -287,20 +287,13 @@ public class FileLoadOperation {
 
     private void updateParams() {
         /** Gomin start */
-        int boostMode = ua.gomin.messenger.configs.GominCoreConfig.INSTANCE.getDownloadSpeedBoost(ApplicationLoader.applicationContext);
-        if (boostMode == 2 && !forceSmallChunk) {
-            downloadChunkSizeBig = 1024 * 1024;
-            maxDownloadRequests = 12;
-            maxDownloadRequestsBig = 12;
-        } else if ((boostMode == 1 || preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams) && !forceSmallChunk) {
-            downloadChunkSizeBig = 1024 * 512;
-            maxDownloadRequests = 8;
-            maxDownloadRequestsBig = 8;
-        } else {
-            downloadChunkSizeBig = 1024 * 128;
-            maxDownloadRequests = 4;
-            maxDownloadRequestsBig = 4;
-        }
+        downloadChunkSizeBig = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getDownloadChunkSize(
+            downloadChunkSizeBig, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
+        );
+        maxDownloadRequests = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getMaxDownloadRequests(
+            maxDownloadRequests, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
+        );
+        maxDownloadRequestsBig = maxDownloadRequests;
         /** Gomin end */
         maxCdnParts = (int) (FileLoader.DEFAULT_MAX_FILE_SIZE / downloadChunkSizeBig);
     }

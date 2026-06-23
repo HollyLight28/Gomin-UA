@@ -52,26 +52,19 @@
 
 ## 🛠️ 4. Технічна інтеграція (Surgical Hooks)
 
-Всі зміни впроваджені хірургічним шляхом з дотриманням правила мінімального втручання в оригінальний код Telegram (не більше 10 рядків змін на файл):
+Всі зміни впроваджені хірургічним шляхом з дотриманням правила мінімального втручання в оригінальний код Telegram (не більше 10 рядків змін на файл) через центральний контролер `GominSpeedController`:
 
 ### Інтеграція в завантажувач (`FileLoadOperation.java`)
 ```java
     private void updateParams() {
         /** Gomin start */
-        int boostMode = ua.gomin.messenger.configs.GominCoreConfig.INSTANCE.getDownloadSpeedBoost(ApplicationLoader.applicationContext);
-        if (boostMode == 2 && !forceSmallChunk) {
-            downloadChunkSizeBig = 1024 * 1024;
-            maxDownloadRequests = 12;
-            maxDownloadRequestsBig = 12;
-        } else if ((boostMode == 1 || preloadPrefixSize > 0 || MessagesController.getInstance(currentAccount).getfileExperimentalParams) && !forceSmallChunk) {
-            downloadChunkSizeBig = 1024 * 512;
-            maxDownloadRequests = 8;
-            maxDownloadRequestsBig = 8;
-        } else {
-            downloadChunkSizeBig = 1024 * 128;
-            maxDownloadRequests = 4;
-            maxDownloadRequestsBig = 4;
-        }
+        downloadChunkSizeBig = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getDownloadChunkSize(
+            downloadChunkSizeBig, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
+        );
+        maxDownloadRequests = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getMaxDownloadRequests(
+            maxDownloadRequests, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
+        );
+        maxDownloadRequestsBig = maxDownloadRequests;
         /** Gomin end */
         maxCdnParts = (int) (FileLoader.DEFAULT_MAX_FILE_SIZE / downloadChunkSizeBig);
     }
@@ -80,10 +73,9 @@
 ### Інтеграція у вивантажувач (`FileUploadOperation.java`)
 ```java
                 /** Gomin start */
-                boolean uploadBoost = ua.gomin.messenger.configs.GominCoreConfig.INSTANCE.getUploadSpeedBoost(ApplicationLoader.applicationContext);
-                int currentMinUploadChunkSize = (uploadBoost && isBigFile) ? 512 : minUploadChunkSize;
-                int currentMaxUploadingKBytes = uploadBoost ? (1024 * 8) : maxUploadingKBytes;
-                uploadChunkSize = (int) Math.max(slowNetwork ? minUploadChunkSlowNetworkSize : currentMinUploadChunkSize, (totalFileSize + 1024L * maxUploadParts - 1) / (1024L * maxUploadParts));
+                int currentMinUploadChunkSize = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getMinUploadChunkSize(minUploadChunkSize, isBigFile, slowNetwork);
+                int currentMaxUploadingKBytes = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getMaxUploadingKBytes(maxUploadingKBytes, slowNetwork);
+                uploadChunkSize = (int) Math.max(currentMinUploadChunkSize, (totalFileSize + 1024L * maxUploadParts - 1) / (1024L * maxUploadParts));
                 /** Gomin end */
                 if (1024 % uploadChunkSize != 0) {
                     int chunkSize = 64;
@@ -93,6 +85,6 @@
                     uploadChunkSize = chunkSize;
                 }
                 /** Gomin start */
-                maxRequestsCount = Math.max(1, (slowNetwork ? maxUploadingSlowNetworkKBytes : currentMaxUploadingKBytes) / uploadChunkSize);
+                maxRequestsCount = Math.max(1, currentMaxUploadingKBytes / uploadChunkSize);
                 /** Gomin end */
 ```

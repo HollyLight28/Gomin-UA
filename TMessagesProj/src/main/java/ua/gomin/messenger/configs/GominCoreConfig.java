@@ -36,9 +36,6 @@ public class GominCoreConfig {
     public boolean getUploadSpeedBoost(Context context) {
         return getPrefs(context).getBoolean("uploadSpeedBoost", false);
     }
-    public boolean getSlowNetworkMode(Context context) {
-        return getPrefs(context).getBoolean("slowNetworkMode", false);
-    }
     public int getSpringAnimation(Context context) {
         return getPrefs(context).getInt("springAnimation", ANIMATION_SPRING);
     }
@@ -59,9 +56,6 @@ public class GominCoreConfig {
     }
     public void setUploadSpeedBoost(Context context, boolean value) {
         getPrefs(context).edit().putBoolean("uploadSpeedBoost", value).apply();
-    }
-    public void setSlowNetworkMode(Context context, boolean value) {
-        getPrefs(context).edit().putBoolean("slowNetworkMode", value).apply();
     }
     public void setSpringAnimation(Context context, int value) {
         getPrefs(context).edit().putInt("springAnimation", value).apply();

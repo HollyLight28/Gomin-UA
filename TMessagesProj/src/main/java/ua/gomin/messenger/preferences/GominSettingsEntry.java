@@ -3,10 +3,12 @@ package ua.gomin.messenger.preferences;
 import android.content.Context;
 import android.view.View;
 
+import org.telegram.messenger.NotificationCenter;
 import org.telegram.messenger.R;
 import org.telegram.ui.Components.UItem;
 import org.telegram.ui.Components.UniversalAdapter;
 
+import ua.gomin.messenger.configs.GominAppearanceConfig;
 import ua.gomin.messenger.configs.GominChatsConfig;
 import ua.gomin.messenger.configs.GominCoreConfig;
 import ua.gomin.messenger.configs.GominMessagesConfig;
@@ -19,8 +21,6 @@ import java.util.ArrayList;
 import ua.gomin.messenger.configs.GominCameraConfig;
 import ua.gomin.messenger.configs.GominChatsConfig;
 import ua.gomin.messenger.configs.GominCoreConfig;
-import ua.gomin.messenger.configs.GominMessagesConfig;
-import ua.gomin.messenger.configs.GominPrivacyConfig;
 
 /**
  * Головна сторінка налаштувань Гоміна.
@@ -30,6 +30,9 @@ public class GominSettingsEntry extends UniversalFragment {
     // Row IDs
     private final int supportCardRow = 0;
     private final int aboutRow = 1;
+
+    // Profile
+    private final int myProfileRow = 5;
 
     // Gomin AI
     private final int geminiSettingsRow = 10;
@@ -51,33 +54,28 @@ public class GominSettingsEntry extends UniversalFragment {
     // Speed Engine
     private final int downloadSpeedBoostRow = 50;
     private final int uploadSpeedBoostRow = 51;
-    private final int slowNetworkModeRow = 52;
 
     // Camera
     private final int cameraDualRow = 60;
 
     // Chat Behavior
-    private final int autoQuoteRow = 70;
-    private final int deleteForAllRow = 71;
-    private final int keepDeletedMessagesRow = 72;
-    private final int customWallpapersRow = 73;
-
-    // Interface
-    private final int hideSearchBarRow = 80;
-    private final int hideStoriesRow = 81;
-
-    // Other
-    private final int springAnimationRow = 90;
-    private final int doubleTapRow = 91;
-    private final int slideActionRow = 92;
+    private final int doubleTapRow = 70;
+    private final int slideActionRow = 71;
 
     // Security
-    private final int securityAskBioRow = 100;
-    private final int securityLockedChatsRow = 101;
-    private final int securityBioEncryptedRow = 102;
-    private final int securityBioArchiveRow = 103;
-    private final int securityBioDeleteRow = 104;
-    private final int securitySystemPinRow = 105;
+    private final int securityAskBioRow = 80;
+    private final int securityBioEncryptedRow = 81;
+    private final int securityBioArchiveRow = 82;
+    private final int securityBioDeleteRow = 83;
+    private final int securitySystemPinRow = 84;
+
+    // Interface
+    private final int hideSearchBarRow = 90;
+    private final int hideStoriesRow = 91;
+
+    // Other
+    private final int customWallpapersRow = 100;
+    private final int springAnimationRow = 101;
 
     @Override
     protected CharSequence getTitle() {
@@ -89,9 +87,19 @@ public class GominSettingsEntry extends UniversalFragment {
         Context context = getContext();
         if (context == null) return;
 
+        // Support Card
+        items.add(UItem.asCustom(supportCardRow, null));
+        items.add(UItem.asShadow(null));
+
+        /** Gomin start — Profile access */
+        items.add(SettingsHelper.asHeaderWithIcon(context, org.telegram.messenger.R.drawable.msg_contact, "👤 Мій Профіль"));
+        items.add(UItem.asButton(myProfileRow, "Мій Профіль", "Відкрити ваш профіль"));
+        items.add(UItem.asShadow(null));
+        /** Gomin end */
+
         // 🤖 GOMIN AI
         items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_bot, "🤖 Gomin AI"));
-        items.add(UItem.asButton(geminiSettingsRow, "Налаштування Gemini"));
+        items.add(UItem.asButton(geminiSettingsRow, "Налаштування нейромережі", "Управління токенами та пресетами"));
         items.add(UItem.asShadow(null));
 
         // 👻 Ghost Mode
@@ -125,10 +133,8 @@ public class GominSettingsEntry extends UniversalFragment {
         // ⚡ Speed Engine
         items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_speed, "⚡ Speed Engine"));
         items.add(UItem.asButton(downloadSpeedBoostRow, "Завантаження", getDownloadSpeedBoostValue(context)));
-        items.add(SettingsHelper.asSwitchCG(uploadSpeedBoostRow, "Прискорення завантаження", "Буфер 512KB")
+        items.add(SettingsHelper.asSwitchCG(uploadSpeedBoostRow, "Прискорення вивантаження", "Буфер 512KB")
                 .setChecked(GominCoreConfig.INSTANCE.getUploadSpeedBoost(context)));
-        items.add(SettingsHelper.asSwitchCG(slowNetworkModeRow, "Режим слабкої мережі", "1 потік × 32KB")
-                .setChecked(GominCoreConfig.INSTANCE.getSlowNetworkMode(context)));
         items.add(UItem.asShadow(null));
 
         // 📷 Камера
@@ -151,8 +157,8 @@ public class GominSettingsEntry extends UniversalFragment {
 
         // 🎨 Інтерфейс
         items.add(SettingsHelper.asHeaderWithIcon(context, R.drawable.msg_palette, "🎨 Інтерфейс"));
-        items.add(SettingsHelper.asSwitchCG(hideSearchBarRow, "Приховати пошук", "Приховати рядок пошуку")
-                .setChecked(false));
+        items.add(SettingsHelper.asSwitchCG(hideSearchBarRow, "Приховати пошук", "Приховати рядок пошуку зверху")
+                .setChecked(GominAppearanceConfig.INSTANCE.getHideSearchFiled(context)));
         items.add(SettingsHelper.asSwitchCG(hideStoriesRow, "Приховати історії", "Не показувати Stories")
                 .setChecked(GominCoreConfig.INSTANCE.getHideStories(context)));
         items.add(UItem.asShadow(null));
@@ -202,6 +208,7 @@ public class GominSettingsEntry extends UniversalFragment {
                 "Максимально (Гомін)"
             }, (dialog, which) -> {
                 GominCoreConfig.INSTANCE.setDownloadSpeedBoost(context, which);
+                ua.gomin.messenger.speed.GominSpeedController.INSTANCE.resetCache();
                 listView.adapter.update(true);
             });
             showDialog(builder.create());
@@ -236,10 +243,8 @@ public class GominSettingsEntry extends UniversalFragment {
         // Speed Engine
         else if (item.id == uploadSpeedBoostRow) {
             GominCoreConfig.INSTANCE.setUploadSpeedBoost(context, !GominCoreConfig.INSTANCE.getUploadSpeedBoost(context));
+            ua.gomin.messenger.speed.GominSpeedController.INSTANCE.resetCache();
             SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getUploadSpeedBoost(context));
-        } else if (item.id == slowNetworkModeRow) {
-            GominCoreConfig.INSTANCE.setSlowNetworkMode(context, !GominCoreConfig.INSTANCE.getSlowNetworkMode(context));
-            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getSlowNetworkMode(context));
         }
 
         // Camera
@@ -264,9 +269,16 @@ public class GominSettingsEntry extends UniversalFragment {
         }
 
         // Interface
-        else if (item.id == hideStoriesRow) {
-            GominCoreConfig.INSTANCE.setHideStories(context, !GominCoreConfig.INSTANCE.getHideStories(context));
-            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getHideStories(context));
+        else if (item.id == hideSearchBarRow) {
+            boolean newVal = !GominAppearanceConfig.INSTANCE.getHideSearchFiled(context);
+            GominAppearanceConfig.INSTANCE.setHideSearchFiled(context, newVal);
+            SettingsHelper.updateCheckState(view, newVal);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.updateInterfaces, 0);
+        } else if (item.id == hideStoriesRow) {
+            boolean newVal = !GominCoreConfig.INSTANCE.getHideStories(context);
+            GominCoreConfig.INSTANCE.setHideStories(context, newVal);
+            SettingsHelper.updateCheckState(view, newVal);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.updateInterfaces, 0);
         }
 
         // Other
