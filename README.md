@@ -1,39 +1,85 @@
-## Telegram messenger for Android
+# 🐦 Гомін.UA — Надшвидкий Український Клієнт Telegram
 
-[Telegram](https://telegram.org) is a messaging app with a focus on speed and security. It’s superfast, simple and free.
-This repo contains the official source code for [Telegram App for Android](https://play.google.com/store/apps/details?id=org.telegram.messenger).
+Ласкаво просимо до **Гомін.UA (Gomin-UA)** — незалежного, безпечного та оптимізованого клієнта Telegram для Android, побудованого на базі офіційного вихідного коду (версія **12.8.1**, build 6916). 
 
-## Creating your Telegram Application
+Цей проєкт створений з однією метою: надати українським користувачам преміальний досвід користування месенджером без зайвого сміття, реклами та стороннього коду, з акцентом на приватність, кастомний дизайн та екстремальну швидкість.
 
-We welcome all developers to use our API and source code to create applications on our platform.
-There are several things we require from **all developers** for the moment.
+---
 
-1. [**Obtain your own api_id**](https://core.telegram.org/api/obtaining_api_id) for your application.
-2. Please **do not** use the name Telegram for your app — or make sure your users understand that it is unofficial.
-3. Kindly **do not** use our standard logo (white paper plane in a blue circle) as your app's logo.
-3. Please study our [**security guidelines**](https://core.telegram.org/mtproto/security_guidelines) and take good care of your users' data and privacy.
-4. Please remember to publish **your** code too in order to comply with the licences.
+## ⚡ | Що реалізовано: Gomin Speed Engine 2.0
 
-### API, Protocol documentation
+Базова логіка Telegram обмежує завантаження та вивантаження файлів жорсткими рамками, орієнтуючись на найслабші пристрої. У **Гомін.UA** реалізовано мережевий рушій **Speed Engine 2.0**, який витискає максимум із сучасного мобільного та Wi-Fi інтернету.
 
-Telegram API manuals: https://core.telegram.org/api
+### 🚀 Download Speed Boost
+Офіційний Telegram завантажує великі файли чанками по 128 KB у 4 потоки. У нашому клієнті реалізовано три режими швидкості, які керуються через налаштування:
+* **Базова швидкість**: Стандартні ліміти Telegram.
+* **Баланс**: Чанки 512 KB, 8 паралельних потоків завантаження (вікно 4 MB).
+* **Максимально (Гомін)**: Чанки **1 MB**, **12 паралельних потоків** (вікно 12 MB). Швидкість скачування медіа зростає у 2.5–3 рази!
 
-MTproto protocol manuals: https://core.telegram.org/mtproto
+### 📤 Upload Speed Boost
+Прискорено надсилання великих файлів (>10 MB) у хмару:
+* Збільшено мінімальний розмір чанка для вивантаження до **512 KB** (замість 128 KB).
+* Черга вивантаження розширена з 2 MB до **8 MB** (`maxUploadingKBytes`).
+* Дозволяє паралельно відправляти до **16 чанків одночасно** (замість стандартних 4-х), завантажуючи гігабітний аплоад на повну потужність.
 
-### Compilation Guide
+---
 
-**Note**: In order to support [reproducible builds](https://core.telegram.org/reproducible-builds), this repo contains dummy release.keystore,  google-services.json and filled variables inside BuildVars.java. Before publishing your own APKs please make sure to replace all these files with your own.
+## 💎 | Інші преміальні покращення Гоміна
 
-You will require Android Studio 3.4, Android NDK rev. 20 and Android SDK 8.1
+### 👻 Ghost Mode (Режим Невидимки)
+* **Анонімне читання**: Читайте повідомлення в чатах так, щоб у співрозмовника вони залишалися непозначеними як прочитані.
+* **Приховане друкування**: Співрозмовники не бачать статус "Друкує...", коли ви пишете повідомлення.
+* **Анонімний перегляд історій**: Автор сторіз не дізнається, що ви дивилися його історію.
+* **Прихований онлайн**: Маскування вашої присутності в мережі.
 
-1. Download the Telegram source code from https://github.com/DrKLO/Telegram ( git clone https://github.com/DrKLO/Telegram.git )
-2. Copy your release.keystore into TMessagesProj/config
-3. Fill out RELEASE_KEY_PASSWORD, RELEASE_KEY_ALIAS, RELEASE_STORE_PASSWORD in gradle.properties to access your  release.keystore
-4.  Go to https://console.firebase.google.com/, create two android apps with application IDs org.telegram.messenger and org.telegram.messenger.beta, turn on firebase messaging and download google-services.json, which should be copied to the same folder as TMessagesProj.
-5. Open the project in the Studio (note that it should be opened, NOT imported).
-6. Fill out values in TMessagesProj/src/main/java/org/telegram/messenger/BuildVars.java – there’s a link for each of the variables showing where and which data to obtain.
-7. You are ready to compile Telegram.
+### 🎨 Преміальна типографіка та інтерфейс
+* Інтегровано сучасні українські шрифти **Nunito** та **Nunito Medium** для красивого відображення тексту.
+* Реалізовано інтелектуальну фільтрацію, щоб кастомний шрифт не псував відображення моноширинних кодів (`monospace`) та курсивів.
 
-### Localization
+### 🧹 Архітектурна оптимізація та фікси
+* **Безпека витоків пам'яті**: Виправлено критичні витоки SQLite з'єднань (через `SQLitePreparedStatement` у messages storage), які присутні в офіційному клієнті при інтенсивному очищенні історії чатів.
+* **Повне чищення каналів**: Дозволено безперешкодне видалення історії в адміністрованих каналах.
 
-We moved all translations to https://translations.telegram.org/en/android/. Please use it.
+---
+
+## 🏗️ | Архітектурна концепція проєкту
+
+Проєкт **Gomin-UA** побудований за принципом **Надбудови (Superstructure)**. Це гарантує простоту майбутніх злиттів (merge) з новими версіями офіційного клієнта Telegram:
+
+1. **Ізоляція**: Весь кастомний код Гоміна знаходиться виключно в пакеті `ua.gomin.messenger.*`.
+2. **Мінімальне втручання**: Зміни в оригінальні класи Telegram (`org.telegram.*`) обмежені максимум **10 рядками коду** на файл і виступають виключно як "ворота" (hooks), що викликають нашу логіку:
+   ```java
+   /** Gomin start */
+   // Виклик нашої надбудови
+   /** Gomin end */
+   ```
+3. **Чистота**: Повна відмова від спадщини Cherrygram (`uz.unnarsx.*`). Ніяких сторонніх трекерів, аналітики чи реклами.
+
+---
+
+## 🛠️ | Інструкція зі збірки проєкту (Compilation Guide)
+
+Локально ми збираємо автономну Standalone Release версію клієнта.
+
+### Вимоги до оточення:
+* **JDK**: v17
+* **Target Android SDK**: API Level 36
+* **Min Android SDK**: API Level 23 (Android 6.0)
+* **NDK**: v21.4.7075529 (потрібен для компіляції C++ JNI бібліотек Telegram)
+
+### Кроки для компіляції:
+1. Замініть файл сховища ключів `release.keystore` у папці `TMessagesProj/config/` на ваш власний (або пропишіть паролі в `gradlew`).
+2. Отримайте ваші `api_id` та `api_hash` на [my.telegram.org](https://my.telegram.org) та впишіть їх у `BuildVars.java`.
+3. Додайте ваш `google-services.json` у корінь проєкту.
+4. Виконайте команду збірки у консолі:
+   ```bash
+   ./gradlew assembleAfatStandalone
+   ```
+5. Зібраний APK-файл буде знаходитись за шляхом:
+   `TMessagesProj_AppStandalone/build/outputs/apk/afat/release/`
+
+---
+
+## 📄 | Ліцензія (Licensing)
+
+Цей проєкт розповсюджується під ліцензією **GNU GPL v2 або пізнішої версії**. Вихідний код є відкритим, що гарантує прозорість та безпеку для кожного користувача. Деталі дивіться у файлі [LICENSE](./LICENSE).
