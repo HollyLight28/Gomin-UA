@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Typeface;
 import android.util.Log;
 
+import org.telegram.messenger.ApplicationLoader;
+
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
@@ -121,13 +123,25 @@ public class GominFontHelper {
      * - все інше → Nunito Regular
      */
     public static Typeface getTypeface(String assetPath) {
-        if (nunitoRegular == null) {
-            // Fallback якщо шрифт не завантажився
-            return Typeface.DEFAULT;
+        // 1. Lazy initialization if called before ApplicationLoader.onCreate
+        if (!initialized && ApplicationLoader.applicationContext != null) {
+            init(ApplicationLoader.applicationContext);
         }
 
-        if (assetPath.contains("medium") || assetPath.contains("rbold") || assetPath.contains("rextrabold")) {
+        if (nunitoRegular == null) {
+            return null; // Fallback to original font loader if custom fonts failed to load
+        }
+
+        // 2. Do not override monospaced, condensed, or italic/special fonts to preserve proper layouts
+        if (assetPath.contains("mono") || assetPath.contains("condensed") || assetPath.contains("italic") || assetPath.contains("mw_") || assetPath.contains("courier")) {
+            return null; // Let AndroidUtilities resolve original fonts (rmono.ttf, ritalic.ttf, etc.)
+        }
+
+        // 3. Proper Nunito weight mapping
+        if (assetPath.contains("rextrabold") || assetPath.contains("rbold")) {
             return nunitoBold;
+        } else if (assetPath.contains("medium")) {
+            return nunitoMedium;
         }
         return nunitoRegular;
     }

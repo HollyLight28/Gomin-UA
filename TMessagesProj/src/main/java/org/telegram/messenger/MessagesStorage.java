@@ -13966,29 +13966,38 @@ public class MessagesStorage extends BaseController {
                 database.beginTransaction();
                 /** Gomin start */
                 if (messagesToGhost != null && !messagesToGhost.isEmpty()) {
-                    SQLitePreparedStatement updateV2 = database.executeFast("UPDATE messages_v2 SET data = ? WHERE mid = ? AND uid = ?");
-                    SQLitePreparedStatement updateTopics = database.executeFast("UPDATE messages_topics SET data = ? WHERE mid = ? AND uid = ?");
-                    for (int i = 0; i < messagesToGhost.size(); i++) {
-                        TLRPC.Message message = messagesToGhost.get(i);
-                        NativeByteBuffer outData = new NativeByteBuffer(message.getObjectSize());
-                        message.serializeToStream(outData);
+                    SQLitePreparedStatement updateV2 = null;
+                    SQLitePreparedStatement updateTopics = null;
+                    try {
+                        updateV2 = database.executeFast("UPDATE messages_v2 SET data = ? WHERE mid = ? AND uid = ?");
+                        updateTopics = database.executeFast("UPDATE messages_topics SET data = ? WHERE mid = ? AND uid = ?");
+                        for (int i = 0; i < messagesToGhost.size(); i++) {
+                            TLRPC.Message message = messagesToGhost.get(i);
+                            NativeByteBuffer outData = new NativeByteBuffer(message.getObjectSize());
+                            message.serializeToStream(outData);
 
-                        updateV2.requery();
-                        updateV2.bindByteBuffer(1, outData);
-                        updateV2.bindInteger(2, message.id);
-                        updateV2.bindLong(3, message.dialog_id);
-                        updateV2.step();
+                            updateV2.requery();
+                            updateV2.bindByteBuffer(1, outData);
+                            updateV2.bindInteger(2, message.id);
+                            updateV2.bindLong(3, message.dialog_id);
+                            updateV2.step();
 
-                        updateTopics.requery();
-                        updateTopics.bindByteBuffer(1, outData);
-                        updateTopics.bindInteger(2, message.id);
-                        updateTopics.bindLong(3, message.dialog_id);
-                        updateTopics.step();
+                            updateTopics.requery();
+                            updateTopics.bindByteBuffer(1, outData);
+                            updateTopics.bindInteger(2, message.id);
+                            updateTopics.bindLong(3, message.dialog_id);
+                            updateTopics.step();
 
-                        outData.reuse();
+                            outData.reuse();
+                        }
+                    } finally {
+                        if (updateV2 != null) {
+                            updateV2.dispose();
+                        }
+                        if (updateTopics != null) {
+                            updateTopics.dispose();
+                        }
                     }
-                    updateV2.dispose();
-                    updateTopics.dispose();
                 }
                 /** Gomin end */
                 for (int i = 0; i < 4; i++) {
@@ -14699,7 +14708,7 @@ public class MessagesStorage extends BaseController {
             }
 
             /** Gomin start */
-            if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted()) {
+            if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && channelId == 0) {
                 database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE uid = %d AND mid <= %d AND out != 0", -channelId,
                         mid)).stepThis().dispose();
                 database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND mid <= %d AND out != 0", -

@@ -30,6 +30,6 @@ Look up the feature's legacy location (usually in the old `Gomin/` codebase, pac
 - Put all visual assets (drawables, layouts, icons) under the custom `res-gomin/` resource directory (not `res-cherrygram/`).
 
 ## 5. Verification Cycle
-1. Run compilation check: `./gradlew assembleAfatDebug`
-2. If compilation fails due to Kotlin compiler errors (e.g., standard library mismatches), verify that no Kotlin files were introduced to `TMessagesProj`.
+1. Run compilation check: `./gradlew assembleAfatStandalone`
+2. If compilation fails due to compiler errors, verify the target files.
 3. Test locally or verify static code integrity before confirming the task is complete.

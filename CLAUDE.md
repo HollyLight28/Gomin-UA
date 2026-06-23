@@ -84,10 +84,9 @@ ua.gomin.messenger/
 
 ## Команди збірки
 
-- **Debug APK**: `./gradlew assembleAfatDebug`
-- **Standalone Release**: `./gradlew assembleAfatStandalone`
+- **Основна збірка (Standalone Release)**: `./gradlew assembleAfatStandalone` (Локально завжди збираємо релізну автономну версію)
 - **Google Play AAB**: `./gradlew bundleAfatRelease`
-- **Встановити**: `./gradlew installAfatDebug`
+- **Встановити Standalone**: `./gradlew installAfatStandalone`
 - **Очистити**: `./gradlew clean`
 - **Тести**: `./gradlew test`
 

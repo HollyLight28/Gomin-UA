@@ -309,7 +309,12 @@ public class FileUploadOperation {
                 if (AccountInstance.getInstance(currentAccount).getUserConfig().isPremium() && totalFileSize > FileLoader.DEFAULT_MAX_FILE_SIZE) {
                     maxUploadParts = MessagesController.getInstance(currentAccount).uploadMaxFilePartsPremium;
                 }
-                uploadChunkSize = (int) Math.max(slowNetwork ? minUploadChunkSlowNetworkSize : minUploadChunkSize, (totalFileSize + 1024L * maxUploadParts - 1) / (1024L * maxUploadParts));
+                /** Gomin start */
+                boolean uploadBoost = ua.gomin.messenger.configs.GominCoreConfig.INSTANCE.getUploadSpeedBoost(ApplicationLoader.applicationContext);
+                int currentMinUploadChunkSize = (uploadBoost && isBigFile) ? 512 : minUploadChunkSize;
+                int currentMaxUploadingKBytes = uploadBoost ? (1024 * 8) : maxUploadingKBytes;
+                uploadChunkSize = (int) Math.max(slowNetwork ? minUploadChunkSlowNetworkSize : currentMinUploadChunkSize, (totalFileSize + 1024L * maxUploadParts - 1) / (1024L * maxUploadParts));
+                /** Gomin end */
                 if (1024 % uploadChunkSize != 0) {
                     int chunkSize = 64;
                     while (uploadChunkSize > chunkSize) {
@@ -317,7 +322,9 @@ public class FileUploadOperation {
                     }
                     uploadChunkSize = chunkSize;
                 }
-                maxRequestsCount = Math.max(1, (slowNetwork ? maxUploadingSlowNetworkKBytes : maxUploadingKBytes) / uploadChunkSize);
+                /** Gomin start */
+                maxRequestsCount = Math.max(1, (slowNetwork ? maxUploadingSlowNetworkKBytes : currentMaxUploadingKBytes) / uploadChunkSize);
+                /** Gomin end */
 
                 if (isEncrypted) {
                     freeRequestIvs = new ArrayList<>(maxRequestsCount);

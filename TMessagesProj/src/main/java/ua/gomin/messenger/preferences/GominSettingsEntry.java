@@ -194,7 +194,17 @@ public class GominSettingsEntry extends UniversalFragment {
         } else if (item.id == notificationSoundRow) {
             // TODO: Show sound selector
         } else if (item.id == downloadSpeedBoostRow) {
-            // TODO: Show speed selector
+            org.telegram.ui.ActionBar.AlertDialog.Builder builder = new org.telegram.ui.ActionBar.AlertDialog.Builder(context);
+            builder.setTitle("Завантаження");
+            builder.setItems(new CharSequence[]{
+                "Вимкнено (Telegram)",
+                "Баланс",
+                "Максимально (Гомін)"
+            }, (dialog, which) -> {
+                GominCoreConfig.INSTANCE.setDownloadSpeedBoost(context, which);
+                listView.adapter.update(true);
+            });
+            showDialog(builder.create());
         } else if (item.id == doubleTapRow) {
             // TODO: Show double tap selector
         } else if (item.id == slideActionRow) {
