@@ -23,6 +23,12 @@
     <string name="AirAlert_Region">Регіон</string>
     <string name="AirAlert_Test">Тест</string>
     <string name="AirAlert_NotSet">Не встановлено</string>
+    <string name="AirAlertStats_Header">Статистика тривог</string>
+    <string name="AirAlertStats_Loading">Завантаження...</string>
+    <string name="AirAlertStats_Error">Не вдалося завантажити дані</string>
+    <string name="AirAlertStats_Retry">Спробувати знову</string>
+    <string name="AirAlertStats_StatusAlert">ТРИВОГА</string>
+    <string name="AirAlertStats_StatusQuiet">Спокій</string>
 
     <!-- Speed Engine -->
     <string name="SpeedEngine_Header">⚡ Speed Engine</string>

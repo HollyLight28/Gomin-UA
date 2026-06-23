@@ -263,11 +263,9 @@ public class AndroidUtilities {
 
     public static Typeface bold() {
         if (mediumTypeface == null) {
-            if (SharedConfig.useSystemBoldFont && Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                mediumTypeface = Typeface.create(null, 500, false);
-            } else {
-                mediumTypeface = getTypeface(TYPEFACE_ROBOTO_MEDIUM);
-            }
+            /** Gomin start */
+            mediumTypeface = getTypeface(TYPEFACE_ROBOTO_MEDIUM);
+            /** Gomin end */
         }
         return mediumTypeface;
     }

@@ -96,6 +96,20 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     private BackupImageView avatarSearchImageView;
     private Drawable backButtonDrawable;
     private final SimpleTextView[] titleTextView = new SimpleTextView[2];
+    /** Gomin start */
+    private void updateAirAlertStatus() {
+        if (titleTextView[0] != null) {
+            setTitle(lastTitle, lastRightDrawable);
+        }
+    }
+
+    private final NotificationCenter.NotificationCenterDelegate airAlertObserver = (id, account, args) -> {
+        if (id == NotificationCenter.cgAirAlertStatusChanged) {
+            updateAirAlertStatus();
+        }
+    };
+    /** Gomin end */
+
     private SimpleTextView subtitleTextView;
     private SimpleTextView additionalSubtitleTextView;
     private View actionModeTop;
@@ -538,6 +552,13 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         if (titleTextView[0] != null) {
             titleTextView[0].setVisibility(value != null && !isSearchFieldVisible ? VISIBLE : INVISIBLE);
             titleTextView[0].setText(lastTitle = value);
+            /** Gomin start */
+            if (ua.gomin.messenger.alerts.AirAlertController.isAlertActive()) {
+                titleTextView[0].setTextColor(0xFFFF0000);
+            } else {
+                titleTextView[0].setTextColor(titleColorToSet != 0 ? titleColorToSet : getThemedColor(Theme.key_actionBarDefaultTitle));
+            }
+            /** Gomin end */
             if (attached && lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
                 ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(null);
             }
@@ -1931,6 +1952,10 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         if (lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
             ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(titleTextView[0]);
         }
+        /** Gomin start */
+        NotificationCenter.getGlobalInstance().addObserver(airAlertObserver, NotificationCenter.cgAirAlertStatusChanged);
+        updateAirAlertStatus();
+        /** Gomin end */
     }
 
     @Override
@@ -1952,6 +1977,9 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
         if (lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
             ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(null);
         }
+        /** Gomin start */
+        NotificationCenter.getGlobalInstance().removeObserver(airAlertObserver, NotificationCenter.cgAirAlertStatusChanged);
+        /** Gomin end */
     }
 
     private void updateAttachState() {

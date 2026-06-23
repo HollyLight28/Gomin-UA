@@ -34,12 +34,16 @@ public class LauncherIconController {
     }
 
     public enum LauncherIcon {
-        DEFAULT("DefaultIcon", R.drawable.icon_background_gomin, R.drawable.icon_foreground_gomin, R.string.AppIconDefault),
-        VINTAGE("VintageIcon", R.drawable.icon_6_background_sa, R.mipmap.icon_6_foreground_sa, R.string.AppIconVintage),
-        AQUA("AquaIcon", R.drawable.icon_4_background_sa, R.mipmap.icon_foreground_sa, R.string.AppIconAqua),
-        PREMIUM("PremiumIcon", R.drawable.icon_3_background_sa, R.mipmap.icon_3_foreground_sa, R.string.AppIconPremium, true),
-        TURBO("TurboIcon", R.drawable.icon_5_background_sa, R.mipmap.icon_5_foreground_sa, R.string.AppIconTurbo, true),
-        NOX("NoxIcon", R.mipmap.icon_2_background_sa, R.mipmap.icon_foreground_sa, R.string.AppIconNox, true);
+        /** Gomin start - 8 launcher icon variants */
+        DEFAULT("DefaultIcon", R.drawable.icon_background_telegram, R.drawable.icon_foreground_gomin, R.string.AppIconDefault),
+        DARK("DarkIcon", R.drawable.icon_background_dark, R.drawable.icon_foreground_gomin_dark, R.string.AppIconDark),
+        GOLD("GoldIcon", R.drawable.icon_background_gold, R.drawable.icon_foreground_gomin_gold, R.string.AppIconGold),
+        WHITE("WhiteIcon", R.drawable.icon_background_white, R.drawable.icon_foreground_gomin_white, R.string.AppIconWhite),
+        AQUA("AquaIcon", R.drawable.icon_background_aqua, R.drawable.icon_foreground_gomin_aqua, R.string.AppIconAqua),
+        LAVANDA("LavandaIcon", R.drawable.icon_background_lavanda, R.drawable.icon_foreground_gomin_lavanda, R.string.AppIconLavanda),
+        SUNSET("SunsetIcon", R.drawable.icon_background_sunset, R.drawable.icon_foreground_gomin_sunset, R.string.AppIconSunset),
+        UKRAINE("UkraineIcon", R.drawable.icon_background_ukraine, R.drawable.icon_foreground_gomin_yellow, R.string.AppIconUkraine);
+        /** Gomin end */
 
         public final String key;
         public final int background;
@@ -51,7 +55,7 @@ public class LauncherIconController {
 
         public ComponentName getComponentName(Context ctx) {
             if (componentName == null) {
-                componentName = new ComponentName(ctx.getPackageName(), "org.telegram.messenger." + key);
+                componentName = new ComponentName(ctx.getPackageName(), "ua.gomin.messenger." + key);
             }
             return componentName;
         }

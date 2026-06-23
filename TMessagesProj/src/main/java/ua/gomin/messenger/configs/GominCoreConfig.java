@@ -24,6 +24,9 @@ public class GominCoreConfig {
     public boolean getAirAlertEnabled(Context context) {
         return getPrefs(context).getBoolean("airAlertEnabled", false);
     }
+    public boolean getAirAlertLastActive(Context context) {
+        return getPrefs(context).getBoolean("airAlertLastActive", false);
+    }
     public String getAirAlertRegionId(Context context) {
         return getPrefs(context).getString("airAlertRegionId", "");
     }
@@ -44,6 +47,9 @@ public class GominCoreConfig {
     }
     public void setAirAlertEnabled(Context context, boolean value) {
         getPrefs(context).edit().putBoolean("airAlertEnabled", value).apply();
+    }
+    public void setAirAlertLastActive(Context context, boolean value) {
+        getPrefs(context).edit().putBoolean("airAlertLastActive", value).apply();
     }
     public void setAirAlertRegionId(Context context, String value) {
         getPrefs(context).edit().putString("airAlertRegionId", value).apply();

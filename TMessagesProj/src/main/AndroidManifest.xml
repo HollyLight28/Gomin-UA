@@ -113,9 +113,10 @@
     >
         <!-- usesCleartextTraffic for browser supporting opening http:// links -->
 
+        <!-- Gomin start - 8 launcher icon variants -->
         <activity-alias
             android:enabled="true"
-            android:name="org.telegram.messenger.DefaultIcon"
+            android:name="ua.gomin.messenger.DefaultIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
             android:exported="true">
 
@@ -129,10 +130,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="org.telegram.messenger.VintageIcon"
+            android:name="ua.gomin.messenger.DarkIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_6_launcher"
-            android:roundIcon="@mipmap/icon_6_launcher_round"
+            android:icon="@drawable/icon_background_dark"
             android:exported="true">
 
             <intent-filter>
@@ -145,10 +145,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="org.telegram.messenger.AquaIcon"
+            android:name="ua.gomin.messenger.GoldIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_4_launcher"
-            android:roundIcon="@mipmap/icon_4_launcher_round"
+            android:icon="@drawable/icon_background_gold"
             android:exported="true">
 
             <intent-filter>
@@ -161,10 +160,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="org.telegram.messenger.PremiumIcon"
+            android:name="ua.gomin.messenger.WhiteIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_3_launcher"
-            android:roundIcon="@mipmap/icon_3_launcher_round"
+            android:icon="@drawable/icon_background_white"
             android:exported="true">
 
             <intent-filter>
@@ -177,10 +175,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="org.telegram.messenger.TurboIcon"
+            android:name="ua.gomin.messenger.AquaIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_5_launcher"
-            android:roundIcon="@mipmap/icon_5_launcher_round"
+            android:icon="@drawable/icon_background_aqua"
             android:exported="true">
 
             <intent-filter>
@@ -193,10 +190,9 @@
 
         <activity-alias
             android:enabled="false"
-            android:name="org.telegram.messenger.NoxIcon"
+            android:name="ua.gomin.messenger.LavandaIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_2_launcher"
-            android:roundIcon="@mipmap/icon_2_launcher_round"
+            android:icon="@drawable/icon_background_lavanda"
             android:exported="true">
 
             <intent-filter>
@@ -206,6 +202,37 @@
             </intent-filter>
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="ua.gomin.messenger.SunsetIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@drawable/icon_background_sunset"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity-alias>
+
+        <activity-alias
+            android:enabled="false"
+            android:name="ua.gomin.messenger.UkraineIcon"
+            android:targetActivity="org.telegram.ui.LaunchActivity"
+            android:icon="@drawable/icon_background_ukraine"
+            android:exported="true">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
+            </intent-filter>
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
+        </activity-alias>
+        <!-- Gomin end -->
 
         <activity
             android:name="org.telegram.ui.LaunchActivity"
@@ -430,6 +457,14 @@
         <receiver android:name=".CallReceiver" android:exported="false">
             <intent-filter>
                 <action android:name="android.intent.action.PHONE_STATE"/>
+            </intent-filter>
+        </receiver>
+
+        <receiver
+            android:name="ua.gomin.messenger.alerts.AirAlertStopReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="STOP_SIREN" />
             </intent-filter>
         </receiver>
 

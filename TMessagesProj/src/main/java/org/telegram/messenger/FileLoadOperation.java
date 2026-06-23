@@ -288,10 +288,10 @@ public class FileLoadOperation {
     private void updateParams() {
         /** Gomin start */
         downloadChunkSizeBig = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getDownloadChunkSize(
-            downloadChunkSizeBig, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
+            1024 * 128, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
         );
         maxDownloadRequests = ua.gomin.messenger.speed.GominSpeedController.INSTANCE.getMaxDownloadRequests(
-            maxDownloadRequests, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
+            4, preloadPrefixSize, MessagesController.getInstance(currentAccount).getfileExperimentalParams, forceSmallChunk
         );
         maxDownloadRequestsBig = maxDownloadRequests;
         /** Gomin end */

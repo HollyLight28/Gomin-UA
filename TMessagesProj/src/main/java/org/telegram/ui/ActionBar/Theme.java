@@ -8584,6 +8584,19 @@ public class Theme {
                 chat_msgTextCode3Paint = new TextPaint(Paint.ANTI_ALIAS_FLAG);
                 chat_msgTextCode3Paint.setTypeface(Typeface.MONOSPACE);
                 chat_msgCodeBgPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
+
+                /** Gomin start — Set Nunito Regular for chat texts, quotes, timestamps */
+                Typeface regularTypeface = AndroidUtilities.getTypeface("fonts/rregular.ttf");
+                if (regularTypeface != null) {
+                    chat_msgTextPaint.setTypeface(regularTypeface);
+                    chat_replyTextPaint.setTypeface(regularTypeface);
+                    chat_quoteTextPaint.setTypeface(regularTypeface);
+                    chat_explanationTextPaint.setTypeface(regularTypeface);
+                    chat_titleLabelTextPaint.setTypeface(regularTypeface);
+                    chat_adminPaint.setTypeface(regularTypeface);
+                    chat_timePaint.setTypeface(regularTypeface);
+                }
+                /** Gomin end */
             }
 
             final float[] emojiSizePercents = new float[] {.68f, .46f, .34f, .28f, .22f, .19f};

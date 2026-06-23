@@ -291,6 +291,8 @@ public class ApplicationLoader extends Application {
 
         /** Gomin start */
         ua.gomin.messenger.helpers.ui.GominFontHelper.init(this);
+        ua.gomin.messenger.alerts.AirAlertNotificationHelper.createNotificationChannels(this);
+        ua.gomin.messenger.alerts.AirAlertController.init();
         /** Gomin end */
 
         if (BuildVars.LOGS_ENABLED) {

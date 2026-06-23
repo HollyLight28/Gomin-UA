@@ -323,9 +323,13 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 }
 
                 if (viewPager.getCurrentPosition() == position) {
-                    final BaseFragment fragment = getCurrentVisibleFragment();
-                    if (fragment instanceof MainTabsActivity.TabFragmentDelegate) {
-                        ((MainTabsActivity.TabFragmentDelegate) fragment).onParentScrollToTop();
+                    if (position == POSITION_CHATS && dialogsActivity != null && dialogsActivity.fragmentView != null && dialogsActivity.getParentLayout() != null && dialogsActivity.getActionBar() != null && dialogsActivity.getActionBar().isSearchFieldVisible()) {
+                        dialogsActivity.getActionBar().closeSearchField();
+                    } else {
+                        final BaseFragment fragment = getCurrentVisibleFragment();
+                        if (fragment instanceof MainTabsActivity.TabFragmentDelegate) {
+                            ((MainTabsActivity.TabFragmentDelegate) fragment).onParentScrollToTop();
+                        }
                     }
                     return;
                 }
@@ -745,6 +749,11 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
     public GlassTabView[] tabs;
 
     public void selectTab(int position, boolean animated) {
+        /** Gomin start — close search field if navigating away from Chats tab */
+        if (position != POSITION_CHATS && dialogsActivity != null && dialogsActivity.fragmentView != null && dialogsActivity.getParentLayout() != null && dialogsActivity.getActionBar() != null && dialogsActivity.getActionBar().isSearchFieldVisible()) {
+            dialogsActivity.getActionBar().closeSearchField();
+        }
+        /** Gomin end */
         for (int a = 0; a < tabs.length; a++) {
             /** Gomin start — Search tab is never "selected" via ViewPager */
             if (a == INDEX_SEARCH) {

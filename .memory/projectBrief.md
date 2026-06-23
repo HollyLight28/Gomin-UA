@@ -7,6 +7,7 @@
 - **Isolation**: All custom code must reside strictly within the `ua.gomin.messenger` package namespace.
 - **Minimal Intervention**: Modifications to original Telegram classes (`org.telegram.*`) must act only as minimal "gates" (hooks) to invoke the Gomin subsystem. Code changes in original Telegram files should not exceed 10 lines per file.
 - **No Upstream Pollution**: Absolute avoidance of third-party frameworks/packages like `uz.unnarsx.cherrygram` to prevent package collision during future upstream merges.
+- **No Kotlin in TMessagesProj**: As a strict technical constraint, all files inside `:TMessagesProj` must be written in pure Java (Kotlin compilation is not supported by the module's toolchain).
 
 ## 2. Branding & Configuration Constants
 - **Application Package**: `ua.gomin.messenger`

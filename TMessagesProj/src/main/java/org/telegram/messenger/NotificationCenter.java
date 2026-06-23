@@ -373,6 +373,10 @@ public class NotificationCenter {
     public static final int contactsPermissionBadgeCheck = totalEvents++;
     public static final int guardBotDecisionResult = totalEvents++;
     public static final int webBrowserSettingsUpdate = totalEvents++;
+    
+    /** Gomin start */
+    public static final int cgAirAlertStatusChanged = totalEvents++;
+    /** Gomin end */
 
     public static boolean alreadyLogged;
 

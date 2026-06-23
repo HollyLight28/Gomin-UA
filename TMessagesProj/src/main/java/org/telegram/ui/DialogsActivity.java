@@ -13427,6 +13427,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 args.putLong("user_id", UserConfig.getInstance(currentAccount).getClientUserId());
                 presentFragment(new ChatActivity(args));
             });
+            /** Gomin start */
+            if (ua.gomin.messenger.configs.GominCoreConfig.INSTANCE.getAirAlertEnabled(ApplicationLoader.applicationContext)) {
+                io.add(R.drawable.msg_mute, LocaleController.getString("AirAlertStats_Header", R.string.AirAlertStats_Header), () -> {
+                    presentFragment(new ua.gomin.messenger.alerts.AirAlertStatsActivity());
+                });
+            }
+            /** Gomin end */
             if (ApplicationLoader.applicationLoaderInstance != null) {
                 ApplicationLoader.applicationLoaderInstance.addItemOptions(io);
             }

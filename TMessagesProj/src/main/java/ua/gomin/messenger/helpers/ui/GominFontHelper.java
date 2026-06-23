@@ -50,6 +50,7 @@ public class GominFontHelper {
             // Замінюємо стандартні шрифти Android через reflection
             replaceDefaultTypeface();
             replaceDefaultBoldTypeface();
+            replaceSystemFontMap();
 
             initialized = true;
             Log.d(TAG, "GominFontHelper initialized — Nunito font active");
@@ -99,6 +100,42 @@ public class GominFontHelper {
     }
 
     /**
+     * Замінює Typeface.sSystemFontMap на Nunito через reflection.
+     * Це гарантує, що ВСІ стандартні TextView (включаючи налаштування) використовуватимуть Nunito.
+     */
+    private static void replaceSystemFontMap() {
+        try {
+            synchronized (Typeface.class) {
+                Field field = Typeface.class.getDeclaredField("sSystemFontMap");
+                field.setAccessible(true);
+                Map<String, Typeface> systemFontMap = (Map<String, Typeface>) field.get(null);
+                if (systemFontMap != null) {
+                    Map<String, Typeface> newFontMap;
+                    try {
+                        // Динамічно копіюємо оригінальний тип мапи (наприклад, ArrayMap на нових Android), щоб уникнути ClassCastException
+                        newFontMap = systemFontMap.getClass().getConstructor(Map.class).newInstance(systemFontMap);
+                    } catch (Exception e) {
+                        newFontMap = new HashMap<>(systemFontMap);
+                    }
+                    newFontMap.put("sans-serif", nunitoRegular);
+                    newFontMap.put("sans-serif-medium", nunitoBold); // Мапимо Medium на Bold для жирних заголовків
+                    newFontMap.put("sans-serif-bold", nunitoBold);
+                    newFontMap.put("sans-serif-black", nunitoBold);
+                    newFontMap.put("sans-serif-light", nunitoRegular);
+                    newFontMap.put("sans-serif-thin", nunitoRegular);
+                    newFontMap.put("default", nunitoRegular);
+                    newFontMap.put("default-bold", nunitoBold);
+                    
+                    field.set(null, newFontMap);
+                    Log.d(TAG, "sSystemFontMap replaced successfully with Nunito");
+                }
+            }
+        } catch (Exception e) {
+            Log.w(TAG, "Could not replace sSystemFontMap: " + e.getMessage());
+        }
+    }
+
+    /**
      * Повертає Nunito Regular.
      */
     public static Typeface getDefault() {
@@ -138,10 +175,8 @@ public class GominFontHelper {
         }
 
         // 3. Proper Nunito weight mapping
-        if (assetPath.contains("rextrabold") || assetPath.contains("rbold")) {
+        if (assetPath.contains("rextrabold") || assetPath.contains("rbold") || assetPath.contains("medium")) {
             return nunitoBold;
-        } else if (assetPath.contains("medium")) {
-            return nunitoMedium;
         }
         return nunitoRegular;
     }

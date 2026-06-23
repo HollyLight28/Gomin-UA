@@ -184,9 +184,44 @@ public class GominSettingsEntry extends UniversalFragment {
         if (item.id == geminiSettingsRow) {
             GominPreferencesNavigator.INSTANCE.createGemini(this);
         } else if (item.id == airAlertRegionRow) {
-            // TODO: Show region selector
+            ArrayList<String> names = new ArrayList<>();
+            ArrayList<String> ids = new ArrayList<>();
+            String[] regionsData = {
+                "1", "Вінницька", "2", "Волинська", "3", "Дніпропетровська", "4", "Донецька",
+                "5", "Житомирська", "6", "Закарпатська", "7", "Запорізька", "8", "Івано-Франківська",
+                "9", "Київська", "10", "Кіровоградська", "11", "Луганська", "12", "Львівська",
+                "13", "Миколаївська", "14", "Одеська", "15", "Полтавська", "16", "Рівненська",
+                "17", "Сумська", "18", "Тернопільська", "19", "Харківська", "20", "Херсонська",
+                "21", "Хмельницька", "22", "Черкаська", "23", "Чернівецька", "24", "Чернігівська",
+                "25", "м. Київ", "26", "АР Крим"
+            };
+            for (int i = 0; i < regionsData.length; i += 2) {
+                ids.add(regionsData[i]);
+                names.add(regionsData[i + 1]);
+            }
+            ua.gomin.messenger.helpers.ui.PopupHelper.show(names, "Оберіть регіон", ids.indexOf(GominCoreConfig.INSTANCE.getAirAlertRegionId(context)), context, i -> {
+                String oldRegionId = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
+                String newRegionId = ids.get(i);
+                if (!oldRegionId.equals(newRegionId)) {
+                    if (!oldRegionId.isEmpty()) {
+                        try {
+                            com.google.firebase.messaging.FirebaseMessaging.getInstance().unsubscribeFromTopic("region_" + oldRegionId);
+                        } catch (Exception e) {
+                            org.telegram.messenger.FileLog.e(e);
+                        }
+                    }
+                    try {
+                        com.google.firebase.messaging.FirebaseMessaging.getInstance().subscribeToTopic("region_" + newRegionId);
+                    } catch (Exception e) {
+                        org.telegram.messenger.FileLog.e(e);
+                    }
+                }
+                GominCoreConfig.INSTANCE.setAirAlertRegionId(context, newRegionId);
+                GominCoreConfig.INSTANCE.setAirAlertRegionName(context, names.get(i));
+                listView.adapter.update(true);
+            });
         } else if (item.id == airAlertTestRow) {
-            // TODO: Test alert
+            ua.gomin.messenger.alerts.AirAlertController.testAlert();
         } else if (item.id == notificationSoundRow) {
             // TODO: Show sound selector
         } else if (item.id == downloadSpeedBoostRow) {
@@ -225,9 +260,31 @@ public class GominSettingsEntry extends UniversalFragment {
 
         // Air Alert
         else if (item.id == airAlertEnabledRow) {
-            GominCoreConfig.INSTANCE.setAirAlertEnabled(context, !GominCoreConfig.INSTANCE.getAirAlertEnabled(context));
-            SettingsHelper.updateCheckState(view, GominCoreConfig.INSTANCE.getAirAlertEnabled(context));
+            boolean newValue = !GominCoreConfig.INSTANCE.getAirAlertEnabled(context);
+            GominCoreConfig.INSTANCE.setAirAlertEnabled(context, newValue);
+            SettingsHelper.updateCheckState(view, newValue);
             listView.adapter.update(true);
+            if (newValue) {
+                ua.gomin.messenger.alerts.AirAlertController.startMonitoring();
+                String currentRegion = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
+                if (!currentRegion.isEmpty()) {
+                    try {
+                        com.google.firebase.messaging.FirebaseMessaging.getInstance().subscribeToTopic("region_" + currentRegion);
+                    } catch (Exception e) {
+                        org.telegram.messenger.FileLog.e(e);
+                    }
+                }
+            } else {
+                ua.gomin.messenger.alerts.AirAlertController.stopMonitoring();
+                String currentRegion = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
+                if (!currentRegion.isEmpty()) {
+                    try {
+                        com.google.firebase.messaging.FirebaseMessaging.getInstance().unsubscribeFromTopic("region_" + currentRegion);
+                    } catch (Exception e) {
+                        org.telegram.messenger.FileLog.e(e);
+                    }
+                }
+            }
         }
 
         // Speed Engine
