@@ -325,7 +325,7 @@ public class GominSettingsEntry extends UniversalFragment {
             boolean newVal = !GominCoreConfig.INSTANCE.getHideStories(context);
             GominCoreConfig.INSTANCE.setHideStories(context, newVal);
             SettingsHelper.updateCheckState(view, newVal);
-            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.updateInterfaces, 0);
+            NotificationCenter.getInstance(currentAccount).postNotificationName(NotificationCenter.storiesUpdated);
         }
 
         // Other

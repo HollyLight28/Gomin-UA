@@ -848,7 +848,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 h += storiesHeight * (1f - searchAnimationProgress) * (1f - rightSlidingProgress) * (1f - progressToActionMode);
             }
             h += storiesOverscroll;
-            h += dp(SEARCH_FIELD_HEIGHT) * (1f - progressToActionMode) * (1f - searchAnimationProgress) * (1f - rightSlidingProgress);
+            /** Gomin start — use dynamic search field height to respect hideSearchFiled toggle */
+            h += getSearchFieldReservedHeight() * (1f - progressToActionMode) * (1f - searchAnimationProgress) * (1f - rightSlidingProgress);
+            /** Gomin end */
 
             return (int) h;
         }
@@ -7178,9 +7180,13 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             return false;
         } else if (animatorSearchVisible.getValue()) {
             if (invoked) {
-                fragmentSearchField.editText.getText().clear();
-                fragmentSearchFieldWatcher.toggleSearch(false);
-                fragmentSearchField.editText.clearFocus();
+                if (fragmentSearchField != null && fragmentSearchField.editText != null) {
+                    fragmentSearchField.editText.getText().clear();
+                    fragmentSearchField.editText.clearFocus();
+                }
+                if (fragmentSearchFieldWatcher != null) {
+                    fragmentSearchFieldWatcher.toggleSearch(false);
+                }
             }
             return false;
         } else if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !tabsAnimationInProgress && !filterTabsView.isAnimatingIndicator() && !startedTracking && !filterTabsView.isFirstTabSelected()) {
@@ -7338,6 +7344,21 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             fragmentSearchField.editText.setSelection(query.length());
         }
     }
+
+    /** Gomin start — public accessor for custom search overlay visibility */
+    public boolean isSearchVisible() {
+        return animatorSearchVisible.getValue() && fragmentSearchField != null && fragmentSearchField.getAlpha() > 0;
+    }
+
+    public void closeSearch() {
+        if (fragmentSearchField != null && fragmentSearchField.editText != null) {
+            fragmentSearchField.editText.getText().clear();
+            AndroidUtilities.hideKeyboard(fragmentSearchField.editText);
+            fragmentSearchField.editText.clearFocus();
+            fragmentSearchFieldWatcher.toggleSearch(false);
+        }
+    }
+    /** Gomin end */
 
     private void showSearch(boolean show, boolean startFromDownloads, boolean animated) {
         showSearch(show, startFromDownloads, animated, false);
@@ -12496,6 +12517,12 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             newVisibility = !getStoriesController().getHiddenList().isEmpty();
         } else {
             newVisibility = !onlySelfStories && getStoriesController().hasStories();
+            /** Gomin start — respect hideStories toggle */
+            if (newVisibility && !MessagesController.getInstance(currentAccount).storiesEnabled()) {
+                newVisibility = false;
+                onlySelfStories = false;
+            }
+            /** Gomin end */
             onlySelfStories = getStoriesController().hasOnlySelfStories();
         }
 

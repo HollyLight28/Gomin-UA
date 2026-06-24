@@ -323,8 +323,12 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
                 }
 
                 if (viewPager.getCurrentPosition() == position) {
-                    if (position == POSITION_CHATS && dialogsActivity != null && dialogsActivity.fragmentView != null && dialogsActivity.getParentLayout() != null && dialogsActivity.getActionBar() != null && dialogsActivity.getActionBar().isSearchFieldVisible()) {
+                    /** Gomin start — also handle custom search overlay */
+                    if (position == POSITION_CHATS && dialogsActivity != null && dialogsActivity.fragmentView != null && dialogsActivity.getParentLayout() != null && dialogsActivity.getActionBar() != null && (dialogsActivity.getActionBar().isSearchFieldVisible() || dialogsActivity.isSearchVisible())) {
                         dialogsActivity.getActionBar().closeSearchField();
+                        if (dialogsActivity.isSearchVisible()) {
+                            dialogsActivity.closeSearch();
+                        }
                     } else {
                         final BaseFragment fragment = getCurrentVisibleFragment();
                         if (fragment instanceof MainTabsActivity.TabFragmentDelegate) {
@@ -672,8 +676,26 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
     private DialogsActivity dialogsActivity;
 
+    /** Gomin start — pending search cancellation support */
+    private Runnable pendingSearchRunnable;
+    private int searchOriginPosition = -1;
+    /** Gomin end */
+
     @Override
     public boolean onBackPressed(boolean invoked) {
+        /** Gomin start — cancel pending search (150ms window before search opens) */
+        if (pendingSearchRunnable != null) {
+            if (invoked) {
+                AndroidUtilities.cancelRunOnUIThread(pendingSearchRunnable);
+                pendingSearchRunnable = null;
+                if (searchOriginPosition >= 0 && searchOriginPosition != viewPager.getCurrentPosition() && searchOriginPosition < TABS_COUNT) {
+                    viewPager.scrollToPosition(searchOriginPosition);
+                }
+                searchOriginPosition = -1;
+            }
+            return false;
+        }
+        /** Gomin end */
         final boolean result = super.onBackPressed(invoked);
         if (result) {
             final int startPosition = getStartPosition();
@@ -734,15 +756,22 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         if (dialogsActivity == null) {
             prepareDialogsActivity(null);
         }
-        if (viewPager.getCurrentPosition() != POSITION_CHATS) {
+
+        searchOriginPosition = viewPager.getCurrentPosition();
+
+        if (searchOriginPosition != POSITION_CHATS) {
             selectTab(POSITION_CHATS, true);
             viewPager.scrollToPosition(POSITION_CHATS);
         }
-        AndroidUtilities.runOnUIThread(() -> {
+
+        pendingSearchRunnable = () -> {
+            pendingSearchRunnable = null;
+            searchOriginPosition = -1;
             if (dialogsActivity != null) {
                 dialogsActivity.search("", true);
             }
-        }, 150);
+        };
+        AndroidUtilities.runOnUIThread(pendingSearchRunnable, searchOriginPosition == POSITION_CHATS ? 0 : 150);
     }
     /** Gomin end */
 
