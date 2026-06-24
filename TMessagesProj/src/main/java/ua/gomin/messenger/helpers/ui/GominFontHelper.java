@@ -33,6 +33,10 @@ public class GominFontHelper {
     private static Typeface fontMedium;
     private static Typeface fontBold;
     private static Typeface fontItalic;
+    
+    // [Architectural Fix] Synthetic Typefaces для збереження стилізації (Bold Italic)
+    private static Typeface fontBoldItalic;
+    private static Typeface fontMediumItalic;
 
     private static volatile boolean initialized = false;
 
@@ -49,6 +53,10 @@ public class GominFontHelper {
             fontMedium = Typeface.createFromAsset(context.getAssets(), FONT_MEDIUM);
             fontBold = Typeface.createFromAsset(context.getAssets(), FONT_BOLD);
             fontItalic = Typeface.createFromAsset(context.getAssets(), FONT_ITALIC);
+
+            // Генеруємо Faux-Italic для жирних ваг, оскільки оригінальних файлів немає
+            fontBoldItalic = Typeface.create(fontBold, Typeface.ITALIC);
+            fontMediumItalic = Typeface.create(fontMedium, Typeface.ITALIC);
 
             // Замінюємо стандартні шрифти Android через reflection
             replaceDefaultTypeface();
@@ -170,9 +178,12 @@ public class GominFontHelper {
 
         // [BugFix 3] Правильний італік-мапінг з урахуванням ваги (rmediumitalic.ttf)
         if (assetPath.contains("italic")) {
-            // Якщо це medium/bold italic, ми не можемо повертати тонкий італік, краще повернути Bold, щоб зберегти акцент
-            if (assetPath.contains("medium") || assetPath.contains("bold")) {
-                return fontBold; 
+            // Використовуємо згенеровані Faux-Italic для збереження і стилю, і ваги
+            if (assetPath.contains("bold")) {
+                return fontBoldItalic; 
+            }
+            if (assetPath.contains("medium")) {
+                return fontMediumItalic;
             }
             return fontItalic;
         }
