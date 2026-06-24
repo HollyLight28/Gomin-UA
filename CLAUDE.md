@@ -96,7 +96,7 @@ ua.gomin.messenger/
 ## Стандарти коду
 
 - Максимум 250 рядків на файл
-- Конфіги — Kotlin object over SharedPreferences
+- Найкращі практики кодування!!!
 - Event bus — `NotificationCenter`
 - Threading — `Utilities.globalQueue` / `AndroidUtilities.runOnUIThread`
 - Ресурси — `res-gomin/` з `values-uk/gomin_strings.xml`

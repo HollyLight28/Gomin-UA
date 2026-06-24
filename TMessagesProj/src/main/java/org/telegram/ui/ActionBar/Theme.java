@@ -8585,7 +8585,7 @@ public class Theme {
                 chat_msgTextCode3Paint.setTypeface(Typeface.MONOSPACE);
                 chat_msgCodeBgPaint = new TextPaint(TextPaint.ANTI_ALIAS_FLAG);
 
-                /** Gomin start — Set Nunito Regular for chat texts, quotes, timestamps */
+                /** Gomin start — Set Plus Jakarta Sans for chat texts, quotes, timestamps */
                 Typeface regularTypeface = AndroidUtilities.getTypeface("fonts/rregular.ttf");
                 if (regularTypeface != null) {
                     chat_msgTextPaint.setTypeface(regularTypeface);
