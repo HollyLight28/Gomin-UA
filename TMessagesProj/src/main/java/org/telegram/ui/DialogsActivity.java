@@ -9904,22 +9904,6 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         selectedDialogsCountTextView.setNumber(selectedDialogs.size(), updateAnimated);
     }
 
-    private void closeSearch() {
-        if (AndroidUtilities.isTablet()) {
-            if (actionBar != null) {
-                actionBar.closeSearchField();
-            }
-            if (searchObject != null) {
-                if (searchViewPager != null) {
-                    searchViewPager.dialogsSearchAdapter.putRecentSearch(searchDialogId, searchObject);
-                }
-                searchObject = null;
-            }
-        } else {
-            closeSearchFieldOnHide = true;
-        }
-    }
-
     protected RecyclerListView getListView() {
         return viewPages[0].listView;
     }
