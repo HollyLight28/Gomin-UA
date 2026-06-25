@@ -9,34 +9,52 @@ import org.telegram.messenger.R;
 
 public class LauncherIconController {
     public static void tryFixLauncherIconIfNeeded() {
-        for (LauncherIcon icon : LauncherIcon.values()) {
-            if (isEnabled(icon)) {
-                return;
+        try {
+            for (LauncherIcon icon : LauncherIcon.values()) {
+                if (isEnabled(icon)) {
+                    return;
+                }
             }
+            setIcon(LauncherIcon.DEFAULT);
+        } catch (Throwable e) {
+            // Safe fallback
         }
-
-        setIcon(LauncherIcon.DEFAULT);
     }
 
     public static boolean isEnabled(LauncherIcon icon) {
-        Context ctx = ApplicationLoader.applicationContext;
-        int i = ctx.getPackageManager().getComponentEnabledSetting(icon.getComponentName(ctx));
-        return i == PackageManager.COMPONENT_ENABLED_STATE_ENABLED || i == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT && icon == LauncherIcon.DEFAULT;
+        try {
+            Context ctx = ApplicationLoader.applicationContext;
+            int i = ctx.getPackageManager().getComponentEnabledSetting(icon.getComponentName(ctx));
+            return i == PackageManager.COMPONENT_ENABLED_STATE_ENABLED || i == PackageManager.COMPONENT_ENABLED_STATE_DEFAULT && icon == LauncherIcon.DEFAULT;
+        } catch (Throwable e) {
+            return icon == LauncherIcon.DEFAULT;
+        }
     }
 
     public static void setIcon(LauncherIcon icon) {
         Context ctx = ApplicationLoader.applicationContext;
         PackageManager pm = ctx.getPackageManager();
         for (LauncherIcon i : LauncherIcon.values()) {
-            pm.setComponentEnabledSetting(i.getComponentName(ctx), i == icon ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
-                    PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            try {
+                pm.setComponentEnabledSetting(i.getComponentName(ctx), i == icon ? PackageManager.COMPONENT_ENABLED_STATE_ENABLED :
+                        PackageManager.COMPONENT_ENABLED_STATE_DISABLED, PackageManager.DONT_KILL_APP);
+            } catch (Throwable e) {
+                // Ignore missing/unregistered components in Standalone build
+            }
         }
+        // Clean restart after 500ms to apply icon change smoothly and avoid abrupt system crash
+        org.telegram.messenger.AndroidUtilities.runOnUIThread(() -> {
+            try {
+                ua.gomin.messenger.helpers.GominRestartHelper.restartApp(ctx);
+            } catch (Throwable e) {
+                System.exit(0);
+            }
+        }, 500);
     }
 
     public enum LauncherIcon {
-        /** Gomin start - 8 launcher icon variants */
-        DEFAULT("DefaultIcon", R.drawable.icon_background_telegram, R.drawable.icon_foreground_gomin, R.string.AppIconDefault),
-        DARK("DarkIcon", R.drawable.icon_background_dark, R.drawable.icon_foreground_gomin_dark, R.string.AppIconDark),
+        /** Gomin start - 7 launcher icon variants */
+        DEFAULT("DefaultIcon", R.drawable.icon_background_dark, R.drawable.icon_foreground_gomin_dark, R.string.AppIconDefault),
         GOLD("GoldIcon", R.drawable.icon_background_gold, R.drawable.icon_foreground_gomin_gold, R.string.AppIconGold),
         WHITE("WhiteIcon", R.drawable.icon_background_white, R.drawable.icon_foreground_gomin_white, R.string.AppIconWhite),
         AQUA("AquaIcon", R.drawable.icon_background_aqua, R.drawable.icon_foreground_gomin_aqua, R.string.AppIconAqua),

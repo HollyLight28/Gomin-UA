@@ -1,9 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
     android:width="108dp"
     android:height="108dp"
     android:viewportWidth="1024"
     android:viewportHeight="1024">
+    <!-- Aqua Circle Disc in Center -->
+    <path
+        android:pathData="M 512, 512 m -300, 0 a 300,300 0 1,0 600,0 a 300,300 0 1,0 -600,0">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:type="linear"
+                android:startX="860"
+                android:startY="136"
+                android:endX="170"
+                android:endY="894">
+                <item
+                    android:color="#FF2AEA7B"
+                    android:offset="0"/>
+                <item
+                    android:color="#FF00C4EE"
+                    android:offset="0.52"/>
+                <item
+                    android:color="#FF0B94FE"
+                    android:offset="1"/>
+            </gradient>
+        </aapt:attr>
+    </path>
+    <!-- White Bird -->
     <group
         android:pivotX="512"
         android:pivotY="512"

@@ -118,7 +118,8 @@
             android:enabled="true"
             android:name="ua.gomin.messenger.DefaultIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:exported="true">
+            android:exported="true"
+            android:icon="@mipmap/ic_defaulticon">
 
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -128,26 +129,13 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
 
-        <activity-alias
-            android:enabled="false"
-            android:name="ua.gomin.messenger.DarkIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_dark"
-            android:exported="true">
 
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
-        </activity-alias>
 
         <activity-alias
             android:enabled="false"
             android:name="ua.gomin.messenger.GoldIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_gold"
+            android:icon="@mipmap/ic_goldicon"
             android:exported="true">
 
             <intent-filter>
@@ -162,7 +150,7 @@
             android:enabled="false"
             android:name="ua.gomin.messenger.WhiteIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_white"
+            android:icon="@mipmap/ic_whiteicon"
             android:exported="true">
 
             <intent-filter>
@@ -177,7 +165,7 @@
             android:enabled="false"
             android:name="ua.gomin.messenger.AquaIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_aqua"
+            android:icon="@mipmap/ic_aquaicon"
             android:exported="true">
 
             <intent-filter>
@@ -192,7 +180,7 @@
             android:enabled="false"
             android:name="ua.gomin.messenger.LavandaIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_lavanda"
+            android:icon="@mipmap/ic_lavandaicon"
             android:exported="true">
 
             <intent-filter>
@@ -207,7 +195,7 @@
             android:enabled="false"
             android:name="ua.gomin.messenger.SunsetIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_sunset"
+            android:icon="@mipmap/ic_sunseticon"
             android:exported="true">
 
             <intent-filter>
@@ -222,7 +210,7 @@
             android:enabled="false"
             android:name="ua.gomin.messenger.UkraineIcon"
             android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@drawable/icon_background_ukraine"
+            android:icon="@mipmap/ic_ukraineicon"
             android:exported="true">
 
             <intent-filter>
@@ -233,6 +221,13 @@
             <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity-alias>
         <!-- Gomin end -->
+
+        <activity
+            android:name="ua.gomin.messenger.helpers.GominRestartHelper"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"
+            android:process=":gomin"
+            android:exported="false"
+            />
 
         <activity
             android:name="org.telegram.ui.LaunchActivity"
