@@ -24,7 +24,6 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_LOCATION" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE_PHONE_CALL" />
-    <uses-permission android:name="android.permission.READ_CALL_LOG" />
     <uses-permission android:name="android.permission.USE_FULL_SCREEN_INTENT"/>
 
     <permission android:name="${applicationId}.permission.MAPS_RECEIVE" android:protectionLevel="signature"/>
@@ -34,95 +33,15 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
 
     <application
-        android:icon="@mipmap/ic_launcher_sa"
-        android:roundIcon="@mipmap/ic_launcher_sa"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher"
         android:label="@string/AppName"
         android:theme="@style/Theme.TMessages.Start"
         android:hardwareAccelerated="true"
         android:largeHeap="true"
         android:supportsRtl="false"
         android:requestLegacyExternalStorage="true"
-        tools:replace="android:supportsRtl">
-
-        <activity-alias
-            android:enabled="false"
-            android:name="org.telegram.messenger.VintageIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_6_launcher_sa"
-            android:roundIcon="@mipmap/icon_6_launcher_sa"
-            android:exported="true"
-            tools:node="replace">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="org.telegram.messenger.AquaIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_4_launcher_sa"
-            android:roundIcon="@mipmap/icon_4_launcher_sa"
-            android:exported="true"
-            tools:node="replace">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="org.telegram.messenger.PremiumIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_3_launcher_sa"
-            android:roundIcon="@mipmap/icon_3_launcher_sa"
-            android:exported="true"
-            tools:node="replace">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="org.telegram.messenger.TurboIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_5_launcher_sa"
-            android:roundIcon="@mipmap/icon_5_launcher_sa"
-            android:exported="true"
-            tools:node="replace">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
-
-        <activity-alias
-            android:enabled="false"
-            android:name="org.telegram.messenger.NoxIcon"
-            android:targetActivity="org.telegram.ui.LaunchActivity"
-            android:icon="@mipmap/icon_2_launcher_sa"
-            android:roundIcon="@mipmap/icon_2_launcher_sa"
-            android:exported="true"
-            tools:node="replace">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-                <category android:name="android.intent.category.MULTIWINDOW_LAUNCHER" />
-            </intent-filter>
-        </activity-alias>
+        tools:replace="android:supportsRtl,android:icon,android:roundIcon">
 
         <meta-data android:name="com.google.android.maps.v2.API_KEY" android:value="AIzaSyA-t0jLPjUt2FxrA8VPK2EiYHcYcboIR6k" />
 
@@ -152,7 +71,6 @@
             android:name="org.telegram.messenger.SMSResultService"
             android:exported="false">
         </receiver>
-
 
         <service
             tools:replace="android:enabled"
