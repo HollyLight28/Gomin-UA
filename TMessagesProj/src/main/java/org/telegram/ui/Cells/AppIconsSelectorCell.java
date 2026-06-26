@@ -23,6 +23,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.core.graphics.ColorUtils;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.LinearSmoothScroller;
 import androidx.recyclerview.widget.RecyclerView;
@@ -64,7 +65,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
         setItemAnimator(null);
         setLayoutAnimation(null);
 
-        setLayoutManager(linearLayoutManager = new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
+        setLayoutManager(linearLayoutManager = new GridLayoutManager(context, 2, GridLayoutManager.HORIZONTAL, false));
         setAdapter(new Adapter() {
 
             @NonNull
@@ -91,18 +92,22 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             @Override
             public void getItemOffsets(@NonNull Rect outRect, @NonNull View view, @NonNull RecyclerView parent, @NonNull State state) {
                 int pos = parent.getChildViewHolder(view).getAdapterPosition();
-                if (pos == 0) {
+                int itemCount = getAdapter().getItemCount();
+                int rows = 2;
+
+                if (pos / rows == 0) {
                     outRect.left = AndroidUtilities.dp(18);
                 }
-                if (pos == getAdapter().getItemCount() - 1) {
+                if (pos / rows == (itemCount - 1) / rows) {
                     outRect.right = AndroidUtilities.dp(18);
                 } else {
-                    int itemCount = getAdapter().getItemCount();
-                    if (itemCount == 4) {
-                        outRect.right = (getWidth() - AndroidUtilities.dp(36) - AndroidUtilities.dp(58) * itemCount) / (itemCount - 1);
-                    } else {
-                        outRect.right = AndroidUtilities.dp(24);
-                    }
+                    outRect.right = AndroidUtilities.dp(24);
+                }
+
+                if (pos % rows == 0) {
+                    outRect.bottom = AndroidUtilities.dp(8);
+                } else {
+                    outRect.top = AndroidUtilities.dp(8);
                 }
             }
         });
@@ -232,7 +237,7 @@ public class AppIconsSelectorCell extends RecyclerListView implements Notificati
             outlinePaint.setStyle(Paint.Style.STROKE);
             outlinePaint.setStrokeWidth(Math.max(2, AndroidUtilities.dp(0.5f)));
 
-            fillPaint.setColor(Color.WHITE);
+            fillPaint.setColor(Color.TRANSPARENT);
         }
 
         @Override
