@@ -5,13 +5,16 @@ import ssl
 ssl._create_default_https_context = ssl._create_unverified_context
 
 urls = {
-    "plusjakarta_regular.ttf": "https://raw.githubusercontent.com/tokotype/PlusJakartaSans/master/fonts/ttf/PlusJakartaSans-Regular.ttf",
-    "plusjakarta_medium.ttf": "https://raw.githubusercontent.com/tokotype/PlusJakartaSans/master/fonts/ttf/PlusJakartaSans-Medium.ttf",
-    "plusjakarta_bold.ttf": "https://raw.githubusercontent.com/tokotype/PlusJakartaSans/master/fonts/ttf/PlusJakartaSans-Bold.ttf",
-    "plusjakarta_italic.ttf": "https://raw.githubusercontent.com/tokotype/PlusJakartaSans/master/fonts/ttf/PlusJakartaSans-Italic.ttf"
+    "gomin_regular.ttf": "https://raw.githubusercontent.com/MacPaw/Fixel/main/fonts/ttf/FixelText-Regular.ttf",
+    "gomin_medium.ttf": "https://raw.githubusercontent.com/MacPaw/Fixel/main/fonts/ttf/FixelText-Medium.ttf",
+    "gomin_bold.ttf": "https://raw.githubusercontent.com/MacPaw/Fixel/main/fonts/ttf/FixelText-Bold.ttf"
 }
 
-out_dir = r"g:\Code\Java\Gomin-UA\TMessagesProj\src\main\assets\fonts"
+# Визначаємо шлях відносно розташування скрипта
+script_dir = os.path.dirname(os.path.abspath(__file__))
+out_dir = os.path.join(script_dir, "TMessagesProj", "src", "main", "assets", "fonts")
+
+os.makedirs(out_dir, exist_ok=True)
 
 for name, url in urls.items():
     out_path = os.path.join(out_dir, name)

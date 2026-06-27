@@ -7,8 +7,8 @@
     <group
         android:pivotX="512"
         android:pivotY="512"
-        android:translateX="100.5"
-        android:translateY="41"
+        android:translateX="61"
+        android:translateY="25"
         android:scaleX="0.6"
         android:scaleY="0.6">
         <path
