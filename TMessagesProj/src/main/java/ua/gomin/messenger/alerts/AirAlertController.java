@@ -1,7 +1,6 @@
 package ua.gomin.messenger.alerts;
 
 import android.content.Context;
-import android.media.MediaPlayer;
 import android.net.Uri;
 import android.util.Log;
 import android.util.Pair;
@@ -33,7 +32,6 @@ public class AirAlertController {
     private static volatile String lastAlertBody = null;
     
     private static Timer timer = null;
-    private static MediaPlayer mediaPlayer = null;
     
     private static Runnable testStopRunnable = null;
     private static Runnable sirenStopRunnable = null;
@@ -211,58 +209,6 @@ public class AirAlertController {
         return isAlertActive;
     }
 
-    private static void playSound(boolean isStart) {
-        if (isStart && !isTesting) {
-            return;
-        }
-        
-        try {
-            if (mediaPlayer != null) {
-                mediaPlayer.setOnCompletionListener(null);
-                try {
-                    mediaPlayer.stop();
-                } catch (Exception ignored) {}
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
-
-            if (isStart) {
-                int soundRes = org.telegram.messenger.R.raw.gomin_siren;
-                MediaPlayer player = MediaPlayer.create(ApplicationLoader.applicationContext, soundRes);
-                if (player != null) {
-                    mediaPlayer = player;
-                    mediaPlayer.setOnErrorListener((mp, what, extra) -> {
-                        stopSirenOnly();
-                        return true;
-                    });
-                    player.start();
-                }
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-            if (mediaPlayer != null) {
-                mediaPlayer.release();
-                mediaPlayer = null;
-            }
-        }
-    }
-
-    private static void stopSirenOnly() {
-        try {
-            if (mediaPlayer != null) {
-                mediaPlayer.setOnCompletionListener(null);
-                try {
-                    mediaPlayer.stop();
-                } catch (Exception ignored) {}
-                mediaPlayer.release();
-            }
-        } catch (Exception e) {
-            Log.e(TAG, "AirAlertController stopSirenOnly error: " + e.getMessage());
-        } finally {
-            mediaPlayer = null;
-        }
-    }
-
     public static void stopSiren() {
         AndroidUtilities.runOnUIThread(() -> {
             if (isTesting) {
@@ -295,7 +241,7 @@ public class AirAlertController {
             AndroidUtilities.cancelRunOnUIThread(safetyStopRunnable);
         }
         isAlertActive = true;
-        playSound(true);
+        AirAlertNotificationHelper.showStartNotification(ApplicationLoader.applicationContext, "🚨 ТЕСТОВА ТРИВОГА", "Перевірка звуку сирени");
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgAirAlertStatusChanged);
 
         testStopRunnable = AirAlertController::stopTest;
@@ -321,8 +267,6 @@ public class AirAlertController {
 
         boolean targetAlertState = savedAlertState;
         Context context = ApplicationLoader.applicationContext;
-
-        playSound(false);
 
         if (targetAlertState) {
             isAlertActive = false;
