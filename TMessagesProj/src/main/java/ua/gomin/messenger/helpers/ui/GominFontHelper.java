@@ -24,10 +24,9 @@ public class GominFontHelper {
 
     private static final String TAG = "GominFontHelper";
 
-    private static final String FONT_REGULAR = "fonts/plusjakarta_regular.ttf";
-    private static final String FONT_MEDIUM = "fonts/plusjakarta_medium.ttf";
-    private static final String FONT_BOLD = "fonts/plusjakarta_bold.ttf";
-    private static final String FONT_ITALIC = "fonts/plusjakarta_italic.ttf";
+    private static final String FONT_REGULAR = "fonts/gomin_regular.ttf";
+    private static final String FONT_MEDIUM = "fonts/gomin_medium.ttf";
+    private static final String FONT_BOLD = "fonts/gomin_bold.ttf";
 
     private static Typeface fontRegular;
     private static Typeface fontMedium;
@@ -52,9 +51,9 @@ public class GominFontHelper {
             fontRegular = Typeface.createFromAsset(context.getAssets(), FONT_REGULAR);
             fontMedium = Typeface.createFromAsset(context.getAssets(), FONT_MEDIUM);
             fontBold = Typeface.createFromAsset(context.getAssets(), FONT_BOLD);
-            fontItalic = Typeface.createFromAsset(context.getAssets(), FONT_ITALIC);
 
-            // Генеруємо Faux-Italic для жирних ваг, оскільки оригінальних файлів немає
+            // Генеруємо Faux-Italic для курсивних накреслень
+            fontItalic = Typeface.create(fontRegular, Typeface.ITALIC);
             fontBoldItalic = Typeface.create(fontBold, Typeface.ITALIC);
             fontMediumItalic = Typeface.create(fontMedium, Typeface.ITALIC);
 
@@ -64,8 +63,8 @@ public class GominFontHelper {
             replaceSystemFontMap();
 
             initialized = true;
-            Log.d(TAG, "GominFontHelper initialized — Plus Jakarta Sans font active");
-        } catch (Exception e) {
+            Log.d(TAG, "GominFontHelper initialized — Fixel Text font active");
+        } catch (Throwable e) {
             Log.e(TAG, "Failed to initialize GominFontHelper: " + e.getMessage());
             // Навіть якщо впали (немає файлу), ставимо true, щоб не спамити init()
             initialized = true; 
@@ -85,7 +84,7 @@ public class GominFontHelper {
                 // На Android 9+ field.set() може спрацювати навіть без зняття FINAL (залежить від вендора)
             }
             field.set(null, fontRegular);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Log.w(TAG, "Could not replace Typeface.DEFAULT: " + e.getMessage());
         }
     }
@@ -101,7 +100,7 @@ public class GominFontHelper {
             } catch (Exception ignored) {
             }
             field.set(null, fontBold);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Log.w(TAG, "Could not replace Typeface.DEFAULT_BOLD: " + e.getMessage());
         }
     }
@@ -122,12 +121,7 @@ public class GominFontHelper {
             field.setAccessible(true);
             Map<String, Typeface> systemFontMap = (Map<String, Typeface>) field.get(null);
             if (systemFontMap != null) {
-                Map<String, Typeface> newFontMap;
-                try {
-                    newFontMap = systemFontMap.getClass().getConstructor(Map.class).newInstance(systemFontMap);
-                } catch (Exception e) {
-                    newFontMap = new HashMap<>(systemFontMap);
-                }
+                Map<String, Typeface> newFontMap = new HashMap<>(systemFontMap);
                 newFontMap.put("sans-serif", fontRegular);
                 newFontMap.put("sans-serif-medium", fontMedium);
                 newFontMap.put("sans-serif-bold", fontBold);
@@ -140,7 +134,7 @@ public class GominFontHelper {
                 field.set(null, newFontMap);
                 Log.d(TAG, "SystemFontMap replaced successfully with custom font");
             }
-        } catch (Exception e) {
+        } catch (Throwable e) {
             Log.w(TAG, "Could not replace systemFontMap: " + e.getMessage());
         }
     }
