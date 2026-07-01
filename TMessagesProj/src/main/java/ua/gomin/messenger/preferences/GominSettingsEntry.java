@@ -184,21 +184,10 @@ public class GominSettingsEntry extends UniversalFragment {
         if (item.id == geminiSettingsRow) {
             GominPreferencesNavigator.INSTANCE.createGemini(this);
         } else if (item.id == airAlertRegionRow) {
-            ArrayList<String> names = new ArrayList<>();
-            ArrayList<String> ids = new ArrayList<>();
-            String[] regionsData = {
-                "1", "Вінницька", "2", "Волинська", "3", "Дніпропетровська", "4", "Донецька",
-                "5", "Житомирська", "6", "Закарпатська", "7", "Запорізька", "8", "Івано-Франківська",
-                "9", "Київська", "10", "Кіровоградська", "11", "Луганська", "12", "Львівська",
-                "13", "Миколаївська", "14", "Одеська", "15", "Полтавська", "16", "Рівненська",
-                "17", "Сумська", "18", "Тернопільська", "19", "Харківська", "20", "Херсонська",
-                "21", "Хмельницька", "22", "Черкаська", "23", "Чернівецька", "24", "Чернігівська",
-                "25", "м. Київ", "26", "АР Крим"
-            };
-            for (int i = 0; i < regionsData.length; i += 2) {
-                ids.add(regionsData[i]);
-                names.add(regionsData[i + 1]);
-            }
+            String[] regionIds = ua.gomin.messenger.alerts.AirAlertRegions.getIds();
+            String[] regionNames = ua.gomin.messenger.alerts.AirAlertRegions.getNames();
+            ArrayList<String> ids = new ArrayList<>(java.util.Arrays.asList(regionIds));
+            ArrayList<String> names = new ArrayList<>(java.util.Arrays.asList(regionNames));
             ua.gomin.messenger.helpers.ui.PopupHelper.show(names, "Оберіть регіон", ids.indexOf(GominCoreConfig.INSTANCE.getAirAlertRegionId(context)), context, i -> {
                 String oldRegionId = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
                 String newRegionId = ids.get(i);

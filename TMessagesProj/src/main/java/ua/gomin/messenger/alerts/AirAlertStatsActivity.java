@@ -32,7 +32,6 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,15 +45,7 @@ import android.util.Pair;
 
 public class AirAlertStatsActivity extends UniversalFragment {
 
-    private final List<Pair<Integer, String>> regions = Arrays.asList(
-        new Pair<>(1, "Вінницька"), new Pair<>(2, "Волинська"), new Pair<>(3, "Дніпропетровська"), new Pair<>(4, "Донецька"),
-        new Pair<>(5, "Житомирська"), new Pair<>(6, "Закарпатська"), new Pair<>(7, "Запорізька"), new Pair<>(8, "Івано-Франківська"),
-        new Pair<>(9, "Київська"), new Pair<>(10, "Кіровоградська"), new Pair<>(11, "Луганська"), new Pair<>(12, "Львівська"),
-        new Pair<>(13, "Миколаївська"), new Pair<>(14, "Одеська"), new Pair<>(15, "Полтавська"), new Pair<>(16, "Рівненська"),
-        new Pair<>(17, "Сумська"), new Pair<>(18, "Тернопільська"), new Pair<>(19, "Харківська"), new Pair<>(20, "Херсонська"),
-        new Pair<>(21, "Хмельницька"), new Pair<>(22, "Черкаська"), new Pair<>(23, "Чернівецька"), new Pair<>(24, "Чернігівська"),
-        new Pair<>(25, "м. Київ"), new Pair<>(26, "АР Крим")
-    );
+    private final List<Pair<Integer, String>> regions = AirAlertRegions.getAllAsInt();
 
     private Map<Integer, Boolean> cachedResults = new HashMap<>();
     private long lastFetchTime = 0L;
@@ -141,14 +132,15 @@ public class AirAlertStatsActivity extends UniversalFragment {
         currentExecutor = executor;
 
         executor.execute(() -> {
-            final CountDownLatch latch = new CountDownLatch(26);
+            final CountDownLatch latch = new CountDownLatch(regions.size());
             final ConcurrentHashMap<Integer, Boolean> results = new ConcurrentHashMap<>();
 
-            for (int i = 1; i <= 26; i++) {
+            for (Pair<Integer, String> region : regions) {
                 if (isDestroyed) break;
-                final int id = i;
+                final int id = region.first;
                 executor.execute(() -> {
                     try {
+                        // TODO: замінити на https://api.gomin.ua коли DNS налаштують
                         URL url = new URL("http://204.168.201.148:5000/status?region_id=" + id);
                         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                         connection.setRequestMethod("GET");

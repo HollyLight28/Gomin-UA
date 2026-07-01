@@ -1,8 +1,6 @@
 package ua.gomin.messenger.alerts;
 
 import android.content.Context;
-import android.net.Uri;
-import android.util.Log;
 import android.util.Pair;
 
 import org.json.JSONObject;
@@ -17,8 +15,6 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -35,13 +31,11 @@ public class AirAlertController {
     
     private static Runnable testStopRunnable = null;
     private static Runnable sirenStopRunnable = null;
-    private static final Runnable safetyStopRunnable = () -> setAlertStatus(false, null, null);
-    
+
     private static volatile boolean isTesting = false;
     private static boolean savedAlertState = false;
     private static volatile Boolean pendingAlertStatus = null;
-    
-    private static final long SAFETY_TIMEOUT_MS = 43200000L; // 12 годин
+
     private static final long SIREN_DURATION_MS = 15000L;
 
     public interface StatusCallback {
@@ -110,6 +104,7 @@ public class AirAlertController {
 
         Utilities.globalQueue.postRunnable(() -> {
             try {
+                // TODO: замінити на https://api.gomin.ua коли DNS налаштують
                 URL url = new URL("http://204.168.201.148:5000/status?region_id=" + regionId);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
@@ -186,17 +181,7 @@ public class AirAlertController {
                 lastAlertBody = finalBody;
                 
                 AirAlertNotificationHelper.showStartNotification(context, finalTitle, finalBody);
-                
-                if (safetyStopRunnable != null) {
-                    AndroidUtilities.cancelRunOnUIThread(safetyStopRunnable);
-                }
-                
-                AndroidUtilities.runOnUIThread(safetyStopRunnable, SAFETY_TIMEOUT_MS);
             } else {
-                if (safetyStopRunnable != null) {
-                    AndroidUtilities.cancelRunOnUIThread(safetyStopRunnable);
-                }
-                
                 String endTitle = title != null ? title : "✅ ВІДБІЙ ТРИВОГИ";
                 String endBody = body != null ? body : regionName;
                 AirAlertNotificationHelper.showEndNotification(context, endTitle, endBody);
@@ -237,9 +222,6 @@ public class AirAlertController {
 
         isTesting = true;
         savedAlertState = isAlertActive;
-        if (safetyStopRunnable != null) {
-            AndroidUtilities.cancelRunOnUIThread(safetyStopRunnable);
-        }
         isAlertActive = true;
         AirAlertNotificationHelper.showStartNotification(ApplicationLoader.applicationContext, "🚨 ТЕСТОВА ТРИВОГА", "Перевірка звуку сирени");
         NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgAirAlertStatusChanged);
@@ -287,16 +269,7 @@ public class AirAlertController {
     }
 
     public static void fetchRegions(String apiKey, final RegionsCallback callback) {
-        final List<Pair<String, String>> regions = Arrays.asList(
-            new Pair<>("1", "Вінницька"), new Pair<>("2", "Волинська"), new Pair<>("3", "Дніпропетровська"), new Pair<>("4", "Донецька"),
-            new Pair<>("5", "Житомирська"), new Pair<>("6", "Закарпатська"), new Pair<>("7", "Запорізька"), new Pair<>("8", "Івано-Франківська"),
-            new Pair<>("9", "Київська"), new Pair<>("10", "Кіровоградська"), new Pair<>("11", "Луганська"), new Pair<>("12", "Львівська"),
-            new Pair<>("13", "Миколаївська"), new Pair<>("14", "Одеська"), new Pair<>("15", "Полтавська"), new Pair<>("16", "Рівненська"),
-            new Pair<>("17", "Сумська"), new Pair<>("18", "Тернопільська"), new Pair<>("19", "Харківська"), new Pair<>("20", "Херсонська"),
-            new Pair<>("21", "Хмельницька"), new Pair<>("22", "Черкаська"), new Pair<>("23", "Чернівецька"), new Pair<>("24", "Чернігівська"),
-            new Pair<>("25", "м. Київ"), new Pair<>("26", "АР Крим")
-        );
-        AndroidUtilities.runOnUIThread(() -> callback.onRegionsLoaded(regions));
+        AndroidUtilities.runOnUIThread(() -> callback.onRegionsLoaded(AirAlertRegions.getAllAsString()));
     }
 
     public static void handlePushStatus(final boolean alert, final String title, final String body, final String regionId) {
