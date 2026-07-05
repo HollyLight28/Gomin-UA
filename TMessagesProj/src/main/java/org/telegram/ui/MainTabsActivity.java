@@ -340,6 +340,9 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
                 selectTab(position, true);
                 viewPager.scrollToPosition(position);
+                if (dialogsActivity != null && dialogsActivity.isSearchVisible()) {
+                    searchOriginPosition = -1;
+                }
             });
 
             tabsView.addView(tabs[index]);
@@ -697,6 +700,17 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         }
         /** Gomin end */
         final boolean result = super.onBackPressed(invoked);
+
+        /** Gomin start — return to search origin tab after closing search */
+        if (searchOriginPosition >= 0 && searchOriginPosition != viewPager.getCurrentPosition() && searchOriginPosition < TABS_COUNT) {
+            if (invoked) {
+                viewPager.scrollToPosition(searchOriginPosition);
+            }
+            searchOriginPosition = -1;
+            return false;
+        }
+        /** Gomin end */
+
         if (result) {
             final int startPosition = getStartPosition();
             if (viewPager.getCurrentPosition() != startPosition) {
@@ -766,7 +780,6 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
 
         pendingSearchRunnable = () -> {
             pendingSearchRunnable = null;
-            searchOriginPosition = -1;
             if (dialogsActivity != null) {
                 dialogsActivity.search("", true);
             }
@@ -782,16 +795,22 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         if (position != POSITION_CHATS && dialogsActivity != null && dialogsActivity.fragmentView != null && dialogsActivity.getParentLayout() != null && dialogsActivity.getActionBar() != null && dialogsActivity.getActionBar().isSearchFieldVisible()) {
             dialogsActivity.getActionBar().closeSearchField();
         }
+
+        boolean searchActive = dialogsActivity != null && dialogsActivity.isSearchVisible();
         /** Gomin end */
         for (int a = 0; a < tabs.length; a++) {
-            /** Gomin start — Search tab is never "selected" via ViewPager */
+            /** Gomin start — highlight search tab when search is active, dim Chats */
             if (a == INDEX_SEARCH) {
-                tabs[a].setSelected(false, animated);
+                tabs[a].setSelected(searchActive, animated);
                 continue;
+            }
+            boolean selected = indexToPosition(a) == position;
+            if (a == INDEX_CHATS && searchActive) {
+                selected = false;
             }
             /** Gomin end */
             GlassTabView tab = tabs[a];
-            tab.setSelected(indexToPosition(a) == position, animated);
+            tab.setSelected(selected, animated);
         }
     }
 
@@ -1040,6 +1059,13 @@ public class MainTabsActivity extends ViewPagerActivity implements NotificationC
         public void setTabsVisible(boolean visible) {
             animatorTabsVisible.setValue(visible, true);
         }
+
+        /** Gomin start */
+        @Override
+        public void onSearchVisibilityChanged(boolean visible) {
+            selectTab(viewPager.getCurrentPosition(), true);
+        }
+        /** Gomin end */
     }
 
 

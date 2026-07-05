@@ -3300,6 +3300,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 }
                 fragmentSearchField.setCloseButtonVisible(true);
                 updateFloatingButtonVisibility(true);
+                if (mainTabsActivityController != null) {
+                    mainTabsActivityController.onSearchVisibilityChanged(true);
+                }
                 checkUi_mainTabsVisible();
             }
 
@@ -3331,6 +3334,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.needCheckSystemBarColors, true);
                 fragmentSearchField.setCloseButtonVisible(false);
                 updateFloatingButtonVisibility(true);
+                if (mainTabsActivityController != null) {
+                    mainTabsActivityController.onSearchVisibilityChanged(false);
+                }
                 checkUi_mainTabsVisible();
                 blur3_InvalidateBlur();
             }
@@ -7187,6 +7193,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
                 if (fragmentSearchFieldWatcher != null) {
                     fragmentSearchFieldWatcher.toggleSearch(false);
                 }
+                if (animatorSearchVisible.getValue()) {
+                    showSearch(false, false, true);
+                }
             }
             return false;
         } else if (filterTabsView != null && filterTabsView.getVisibility() == View.VISIBLE && !tabsAnimationInProgress && !filterTabsView.isAnimatingIndicator() && !startedTracking && !filterTabsView.isFirstTabSelected()) {
@@ -7342,12 +7351,17 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         if (fragmentSearchField != null) {
             fragmentSearchField.editText.setText(query);
             fragmentSearchField.editText.setSelection(query.length());
+            fragmentSearchField.editText.requestFocus();
+            AndroidUtilities.showKeyboard(fragmentSearchField.editText);
+        }
+        if (fragmentSearchFieldWatcher != null) {
+            fragmentSearchFieldWatcher.toggleSearch(true);
         }
     }
 
     /** Gomin start — public accessor for custom search overlay visibility */
     public boolean isSearchVisible() {
-        return animatorSearchVisible.getValue() && fragmentSearchField != null && fragmentSearchField.getAlpha() > 0;
+        return animatorSearchVisible.getValue() && fragmentSearchField != null;
     }
 
     public void closeSearch() {
@@ -7356,6 +7370,9 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
             AndroidUtilities.hideKeyboard(fragmentSearchField.editText);
             fragmentSearchField.editText.clearFocus();
             fragmentSearchFieldWatcher.toggleSearch(false);
+            if (animatorSearchVisible.getValue()) {
+                showSearch(false, false, true);
+            }
         }
     }
     /** Gomin end */
@@ -13732,7 +13749,7 @@ public class DialogsActivity extends BaseFragment implements NotificationCenter.
         }
 
         /** Gomin start — Force hide search field when user toggled "Приховати пошук" */
-        if (shouldHideHomeSearchField()) {
+        if (shouldHideHomeSearchField() && !animatorSearchVisible.getValue()) {
             fragmentSearchField.setAlpha(0);
             fragmentSearchField.setVisibility(View.GONE);
             animatorSearchButtonVisible.setValue(true, true);
