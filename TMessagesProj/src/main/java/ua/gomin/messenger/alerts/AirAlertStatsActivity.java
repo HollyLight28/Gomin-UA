@@ -1,12 +1,9 @@
 package ua.gomin.messenger.alerts;
 
 import android.content.Context;
-import android.graphics.PorterDuff;
-import android.graphics.PorterDuffColorFilter;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -181,19 +178,11 @@ public class AirAlertStatsActivity extends UniversalFragment {
             AndroidUtilities.dp(20f), AndroidUtilities.dp(12f)
         );
 
-        ImageView icon = new ImageView(context);
-        icon.setImageResource(hasAlert ? R.drawable.msg_notifications : R.drawable.msg_mute);
-        int color = hasAlert ? 0xFFE53935 : Theme.getColor(Theme.key_windowBackgroundWhiteBlackText);
-        icon.setColorFilter(new PorterDuffColorFilter(color, PorterDuff.Mode.SRC_IN));
-        layout.addView(icon, LayoutHelper.createLinear(24, 24, 0f, 0f, 0f, 16f));
-
         TextView text = new TextView(context);
         text.setText(name);
-        text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16f);
+        text.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18f);
         text.setTextColor(hasAlert ? 0xFFE53935 : Theme.getColor(Theme.key_windowBackgroundWhiteBlackText));
-        if (hasAlert) {
-            text.setTypeface(AndroidUtilities.bold());
-        }
+        text.setTypeface(AndroidUtilities.getTypeface("fonts/gomin_medium.ttf"));
         text.setGravity(Gravity.CENTER_VERTICAL | Gravity.START);
         layout.addView(text, LayoutHelper.createLinear(0, LayoutHelper.WRAP_CONTENT, 1f));
 

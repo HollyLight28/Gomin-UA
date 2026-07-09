@@ -63,7 +63,7 @@ public class GominFontHelper {
             replaceSystemFontMap();
 
             initialized = true;
-            Log.d(TAG, "GominFontHelper initialized — Fixel Text font active");
+            Log.d(TAG, "GominFontHelper initialized — Montserrat font active");
         } catch (Throwable e) {
             Log.e(TAG, "Failed to initialize GominFontHelper: " + e.getMessage());
             // Навіть якщо впали (немає файлу), ставимо true, щоб не спамити init()

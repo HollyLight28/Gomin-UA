@@ -4,10 +4,11 @@ import ssl
 
 ssl._create_default_https_context = ssl._create_unverified_context
 
+# Montserrat — Medium(500) як regular, SemiBold(600) як medium, Bold(700) як bold
 urls = {
-    "gomin_regular.ttf": "https://raw.githubusercontent.com/MacPaw/Fixel/main/fonts/ttf/FixelText-Regular.ttf",
-    "gomin_medium.ttf": "https://raw.githubusercontent.com/MacPaw/Fixel/main/fonts/ttf/FixelText-Medium.ttf",
-    "gomin_bold.ttf": "https://raw.githubusercontent.com/MacPaw/Fixel/main/fonts/ttf/FixelText-Bold.ttf"
+    "gomin_regular.ttf": "https://raw.githubusercontent.com/JulietaUla/Montserrat/master/fonts/ttf/Montserrat-Medium.ttf",
+    "gomin_medium.ttf": "https://raw.githubusercontent.com/JulietaUla/Montserrat/master/fonts/ttf/Montserrat-SemiBold.ttf",
+    "gomin_bold.ttf": "https://raw.githubusercontent.com/JulietaUla/Montserrat/master/fonts/ttf/Montserrat-Bold.ttf"
 }
 
 # Визначаємо шлях відносно розташування скрипта
