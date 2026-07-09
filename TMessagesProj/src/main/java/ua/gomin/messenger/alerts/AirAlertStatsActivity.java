@@ -35,11 +35,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 
 import android.util.Pair;
 
@@ -53,7 +48,6 @@ public class AirAlertStatsActivity extends UniversalFragment {
     private SwipeRefreshLayout swipeRefresh = null;
     private boolean dataLoaded = false;
     private boolean isDestroyed = false;
-    private ExecutorService currentExecutor = null;
 
     @Override
     public CharSequence getTitle() {
@@ -111,8 +105,8 @@ public class AirAlertStatsActivity extends UniversalFragment {
 
     private void loadData() {
         if (System.currentTimeMillis() - lastFetchTime < 30000 && !cachedResults.isEmpty()) {
-            if (listView != null && listView.getAdapter() != null) {
-                listView.getAdapter().notifyDataSetChanged();
+            if (listView != null) {
+                listView.adapter.update(false);
             }
             return;
         }
@@ -121,72 +115,54 @@ public class AirAlertStatsActivity extends UniversalFragment {
         if (swipeRefresh != null) {
             swipeRefresh.setRefreshing(true);
         }
-        if (listView != null && listView.getAdapter() != null) {
-            listView.getAdapter().notifyDataSetChanged();
+        if (listView != null) {
+            listView.adapter.update(false);
         }
         fetchAllRegions();
     }
 
     private void fetchAllRegions() {
-        final ExecutorService executor = Executors.newFixedThreadPool(6);
-        currentExecutor = executor;
-
-        executor.execute(() -> {
-            final CountDownLatch latch = new CountDownLatch(regions.size());
-            final ConcurrentHashMap<Integer, Boolean> results = new ConcurrentHashMap<>();
-
-            for (Pair<Integer, String> region : regions) {
-                if (isDestroyed) break;
-                final int id = region.first;
-                executor.execute(() -> {
-                    try {
-                        // TODO: замінити на https://api.gomin.ua коли DNS налаштують
-                        URL url = new URL("http://204.168.201.148:5000/status?region_id=" + id);
-                        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-                        connection.setRequestMethod("GET");
-                        connection.setConnectTimeout(3000);
-                        connection.setReadTimeout(3000);
-
-                        if (connection.getResponseCode() == 200) {
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
-                            StringBuilder sb = new StringBuilder();
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                sb.append(line);
-                            }
-                            reader.close();
-                            
-                            JSONObject json = new JSONObject(sb.toString());
-                            results.put(id, json.optBoolean("alert", false));
-                        }
-                    } catch (Exception e) {
-                        FileLog.e(e);
-                    } finally {
-                        latch.countDown();
-                    }
-                });
-            }
-
+        Utilities.globalQueue.postRunnable(() -> {
+            Map<Integer, Boolean> results = new HashMap<>();
             try {
-                latch.await(20, TimeUnit.SECONDS);
+                // TODO: замінити на https://api.gomin.ua коли DNS налаштують
+                URL url = new URL("http://204.168.201.148:5000/status/all");
+                HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+                connection.setRequestMethod("GET");
+                connection.setConnectTimeout(5000);
+                connection.setReadTimeout(5000);
+
+                if (connection.getResponseCode() == 200) {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream(), "UTF-8"));
+                    StringBuilder sb = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        sb.append(line);
+                    }
+                    reader.close();
+
+                    JSONObject json = new JSONObject(sb.toString());
+                    for (Pair<Integer, String> region : regions) {
+                        results.put(region.first, json.optBoolean(String.valueOf(region.first), false));
+                    }
+                }
             } catch (Exception e) {
                 FileLog.e(e);
-            } finally {
-                executor.shutdown();
-                AndroidUtilities.runOnUIThread(() -> {
-                    if (isDestroyed || getParentActivity() == null) return;
-                    cachedResults = new HashMap<>(results);
-                    lastFetchTime = System.currentTimeMillis();
-                    isLoading = false;
-                    dataLoaded = true;
-                    if (swipeRefresh != null) {
-                        swipeRefresh.setRefreshing(false);
-                    }
-                    if (listView != null && listView.getAdapter() != null) {
-                        listView.getAdapter().notifyDataSetChanged();
-                    }
-                });
             }
+
+            AndroidUtilities.runOnUIThread(() -> {
+                if (isDestroyed || getParentActivity() == null) return;
+                cachedResults = results;
+                lastFetchTime = System.currentTimeMillis();
+                isLoading = false;
+                dataLoaded = true;
+                if (swipeRefresh != null) {
+                    swipeRefresh.setRefreshing(false);
+                }
+                if (listView != null) {
+                    listView.adapter.update(false);
+                }
+            });
         });
     }
 
@@ -292,12 +268,5 @@ public class AirAlertStatsActivity extends UniversalFragment {
     public void onFragmentDestroy() {
         super.onFragmentDestroy();
         isDestroyed = true;
-        try {
-            if (currentExecutor != null) {
-                currentExecutor.shutdownNow();
-            }
-        } catch (Exception e) {
-            FileLog.e(e);
-        }
     }
 }
