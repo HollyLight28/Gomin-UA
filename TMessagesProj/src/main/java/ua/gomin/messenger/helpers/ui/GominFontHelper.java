@@ -11,12 +11,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Gomin Font Helper — замінює Roboto на Plus Jakarta Sans по всьому додатку.
+ * Gomin Font Helper — замінює Roboto на Montserrat по всьому додатку.
  *
  * Архітектура:
- * 1. Завантажує Plus Jakarta Sans з assets/fonts/ (regular, medium, bold, italic).
+ * 1. Завантажує Montserrat з assets/fonts/ (Medium, SemiBold, Bold).
  * 2. При init() безпечно замінює sSystemFontMap.
- * 3. Мапить ВСІ запити getTypeface() на Plus Jakarta Sans, включаючи mw_bold та italic.
+ * 3. Мапить ВСІ запити getTypeface() на Montserrat, включаючи mw_bold та italic.
+ *
+ * Weight mapping: Medium(500)→regular, SemiBold(600)→medium, Bold(700)→bold.
  *
  * Безпечний для оновлень Telegram — мінімум файлів для зміни.
  */
@@ -148,7 +150,7 @@ public class GominFontHelper {
     }
 
     /**
-     * Мапить будь-який шлях до шрифту на Plus Jakarta Sans.
+     * Мапить будь-який шлях до шрифту на Montserrat.
      */
     public static Typeface getTypeface(String assetPath) {
         // [BugFix 1] Захист від NullPointerException

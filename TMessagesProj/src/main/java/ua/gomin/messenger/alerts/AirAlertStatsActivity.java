@@ -193,9 +193,7 @@ public class AirAlertStatsActivity extends UniversalFragment {
         ));
         status.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 12f);
         status.setTextColor(hasAlert ? 0xFFE53935 : 0xFF4CAF50);
-        if (hasAlert) {
-            status.setTypeface(AndroidUtilities.bold());
-        }
+        status.setTypeface(AndroidUtilities.getTypeface("fonts/gomin_medium.ttf"));
         status.setGravity(Gravity.CENTER_VERTICAL | Gravity.END);
         layout.addView(status, LayoutHelper.createLinear(LayoutHelper.WRAP_CONTENT, LayoutHelper.WRAP_CONTENT));
 

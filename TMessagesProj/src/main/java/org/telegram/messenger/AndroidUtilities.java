@@ -2421,7 +2421,7 @@ public class AndroidUtilities {
                             if (assetPath.contains("rextrabold")) {
                                 builder.setWeight(800);
                             }
-                            if (assetPath.contains("medium") || assetPath.contains("rbold")) {
+                            if ((assetPath.contains("medium") || assetPath.contains("rbold")) && !assetPath.contains("gomin")) {
                                 builder.setWeight(700);
                             }
                             if (assetPath.contains("italic")) {
