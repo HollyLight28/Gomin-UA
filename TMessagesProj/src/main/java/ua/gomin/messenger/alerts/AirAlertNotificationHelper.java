@@ -168,7 +168,9 @@ public class AirAlertNotificationHelper {
     public static void cancelAll(Context context) {
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         if (notificationManager != null) {
+            // Скасовуємо ВСІ сповіщення тривоги (критичне + тихе + відбій)
             notificationManager.cancel(NOTIFICATION_ID);
+            notificationManager.cancel(NOTIFICATION_ID + 1);
         }
     }
 }

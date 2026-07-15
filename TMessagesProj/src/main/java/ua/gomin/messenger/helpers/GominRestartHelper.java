@@ -25,11 +25,6 @@ public final class GominRestartHelper extends Activity {
         
         Intent intent = getIntent();
         if (intent != null) {
-            int mainPid = intent.getIntExtra(KEY_MAIN_PROCESS_PID, -1);
-            if (mainPid != -1 && mainPid != Process.myPid()) {
-                Process.killProcess(mainPid);
-            }
-            
             ArrayList<Intent> intents = intent.getParcelableArrayListExtra(KEY_RESTART_INTENTS);
             if (intents != null && !intents.isEmpty()) {
                 try {
@@ -42,6 +37,13 @@ public final class GominRestartHelper extends Activity {
                         } catch (Throwable ignored) {}
                     }
                 }
+            }
+            
+            // Вбиваємо старий процес ПІСЛЯ запуску нових activity,
+            // щоб уникнути race condition коли PID вже використовується іншим процесом.
+            int mainPid = intent.getIntExtra(KEY_MAIN_PROCESS_PID, -1);
+            if (mainPid != -1 && mainPid != Process.myPid()) {
+                Process.killProcess(mainPid);
             }
         }
         

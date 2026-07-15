@@ -18,7 +18,7 @@ public class GominPreferencesNavigator {
     }
 
     public void createGemini(BaseFragment fragment) {
-        // TODO: GeminiPreferencesEntry
+        fragment.presentFragment(new GeminiPreferencesEntry());
     }
 
     public void createDebug(BaseFragment fragment) {

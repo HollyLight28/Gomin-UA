@@ -27,13 +27,13 @@ public class AirAlertController {
     private static volatile String lastAlertTitle = null;
     private static volatile String lastAlertBody = null;
     
-    private static Timer timer = null;
+    private static volatile Timer timer = null;
     
-    private static Runnable testStopRunnable = null;
-    private static Runnable sirenStopRunnable = null;
+    private static volatile Runnable testStopRunnable = null;
+    private static volatile Runnable sirenStopRunnable = null;
 
     private static volatile boolean isTesting = false;
-    private static boolean savedAlertState = false;
+    private static volatile boolean savedAlertState = false;
     private static volatile Boolean pendingAlertStatus = null;
 
     private static final long SIREN_DURATION_MS = 15000L;

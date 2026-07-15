@@ -1669,6 +1669,8 @@ public class ChatActivity extends BaseFragment implements
 
     private final static int chat_menu_topic_create = 73;
 
+    private final static int gomin_shield_menu_item = 991199;
+
     private final static int id_chat_compose_panel = 1000;
 
     RecyclerListView.OnItemLongClickListenerExtended onItemLongClickListener = new RecyclerListView.OnItemLongClickListenerExtended() {
@@ -3944,6 +3946,8 @@ public class ChatActivity extends BaseFragment implements
                     getSendMessagesHelper().sendMessage(SendMessagesHelper.SendMessageParams.of("/help", dialog_id, null, null, null, false, null, null, null, true, 0, 0, null, false));
                 } else if (id == bot_settings) {
                     getSendMessagesHelper().sendMessage(SendMessagesHelper.SendMessageParams.of("/settings", dialog_id, null, null, null, false, null, null, null, true, 0, 0, null, false));
+                } else if (id == gomin_shield_menu_item) {
+                    ua.gomin.messenger.ai.GominShieldBottomSheet.show(ChatActivity.this);
                 } else if (id == search) {
                     openSearchWithText(isSupportedTags() ? "" : null);
                 } else if (id == translate) {
@@ -4369,6 +4373,7 @@ public class ChatActivity extends BaseFragment implements
             if (searchItem != null) {
                 headerItem.lazilyAddSubItem(search, R.drawable.msg_search, LocaleController.getString(R.string.Search));
             }
+            headerItem.lazilyAddSubItem(gomin_shield_menu_item, R.drawable.msg_secret, "Ментал Щит 🛡");
             if (ChatObject.isBoostSupported(currentChat) && (getUserConfig().isPremium() || ChatObject.isBoosted(chatInfo) || ChatObject.hasAdminRights(currentChat))) {
                 RLottieDrawable drawable = new RLottieDrawable(R.raw.boosts, "" + R.raw.boosts, dp(24), dp(24));
                 headerItem.lazilyAddSubItem(boost_group, drawable, LocaleController.getString(ChatObject.isChannelAndNotMegaGroup(currentChat) ? R.string.BoostingBoostChannelMenu : R.string.BoostingBoostGroupMenu));
