@@ -35,7 +35,7 @@ jobs:
     - name: Setup Android SDK
       uses: android-actions/setup-android@v3
       with:
-        packages: 'build-tools;35.0.0 ndk;27.2.12479018'
+        packages: 'build-tools;35.0.0 ndk;21.4.7075529'
 
     - name: Accept Android SDK licenses
       run: yes | sdkmanager --licenses || true
@@ -76,12 +76,13 @@ jobs:
         RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
         RELEASE_KEY_PASSWORD: ${{ secrets.RELEASE_KEY_PASSWORD }}
       run: |
+        export GRADLE_OPTS="-Xmx8G -Dorg.gradle.jvmargs=-Xmx8G -Dkotlin.compiler.execution.strategy=ps"
         ./gradlew :TMessagesProj_AppStandalone:assembleAfatStandalone \
           --no-daemon \
           --stacktrace \
-          -Dorg.gradle.workers.max=2 \
-          -Pandroid.handler.cmake.parallelJobs=2 \
-          -Dorg.gradle.jvmargs="-Xmx4g -XX:+HeapDumpOnOutOfMemoryError -XX:MaxMetaspaceSize=1g"
+          -Dorg.gradle.workers.max=4 \
+          -Pandroid.handler.cmake.parallelJobs=4 \
+          -Dorg.gradle.jvmargs="-Xmx8g -XX:+HeapDumpOnOutOfMemoryError -XX:MaxMetaspaceSize=2g"
 
     - name: Find and Prepare APK
       id: find_apk
