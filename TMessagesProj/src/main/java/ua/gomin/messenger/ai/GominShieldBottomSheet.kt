@@ -17,6 +17,7 @@ import androidx.core.content.ContextCompat
 import android.text.TextUtils
 import org.telegram.messenger.AndroidUtilities
 import org.telegram.messenger.AndroidUtilities.dp
+import org.telegram.messenger.FileLog
 import org.telegram.messenger.LocaleController
 import org.telegram.messenger.MessageObject
 import org.telegram.messenger.MessagesController
@@ -297,7 +298,8 @@ class GominShieldBottomSheet(
                 
                 val historyList = ArrayList<String>()
                 val sdf = java.text.SimpleDateFormat("yyyy-MM-dd HH:mm", java.util.Locale.getDefault())
-                
+                FileLog.d("GominShield: знайдено ${messages.size} повідомлень в базі для dialogId=$dialogId")
+
                 var actualCount = 0
                 for (i in 0 until messages.size) {
                     val mo = messages[i]
@@ -315,7 +317,8 @@ class GominShieldBottomSheet(
                 
                 historyList.reverse()
                 val finalHistoryText = historyList.joinToString("\n").trim()
-                
+                FileLog.d("GominShield: з них текстових реплік: $actualCount")
+
                 if (finalHistoryText.isEmpty()) {
                     // Повторна перевірка перед UI операцією
                     if (activity.isFinishing || bottomSheet.isDismissed) {

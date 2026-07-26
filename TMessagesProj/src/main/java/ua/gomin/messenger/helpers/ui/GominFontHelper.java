@@ -26,9 +26,9 @@ public class GominFontHelper {
 
     private static final String TAG = "GominFontHelper";
 
-    private static final String FONT_REGULAR = "fonts/gomin_regular.ttf";
-    private static final String FONT_MEDIUM = "fonts/gomin_medium.ttf";
-    private static final String FONT_BOLD = "fonts/gomin_bold.ttf";
+    private static final String FONT_REGULAR = "fonts/nunito_semibold.ttf";
+    private static final String FONT_MEDIUM = "fonts/nunito_bold.ttf";
+    private static final String FONT_BOLD = "fonts/nunito_extrabold.ttf";
 
     private static Typeface fontRegular;
     private static Typeface fontMedium;
@@ -65,7 +65,7 @@ public class GominFontHelper {
             replaceSystemFontMap();
 
             initialized = true;
-            Log.d(TAG, "GominFontHelper initialized — Montserrat font active");
+            Log.d(TAG, "GominFontHelper initialized — Nunito font active");
         } catch (Throwable e) {
             Log.e(TAG, "Failed to initialize GominFontHelper: " + e.getMessage());
             // Навіть якщо впали (немає файлу), ставимо true, щоб не спамити init()
@@ -150,7 +150,7 @@ public class GominFontHelper {
     }
 
     /**
-     * Мапить будь-який шлях до шрифту на Montserrat.
+     * Мапить будь-який шлях до шрифту на Nunito.
      */
     public static Typeface getTypeface(String assetPath) {
         // [BugFix 1] Захист від NullPointerException

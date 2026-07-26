@@ -251,12 +251,12 @@ public class AndroidUtilities {
     public final static int REPLACING_TAG_TYPE_LINK_NBSP = 3;
     public final static int REPLACING_TAG_TYPE_UNDERLINE = 4;
 
-    public final static String TYPEFACE_ROBOTO_REGULAR = "fonts/rregular.ttf";
-    public final static String TYPEFACE_ROBOTO_MEDIUM = "fonts/rmedium.ttf";
-    public final static String TYPEFACE_ROBOTO_EXTRA_BOLD = "fonts/rextrabold.ttf";
-    public final static String TYPEFACE_ROBOTO_MEDIUM_ITALIC = "fonts/rmediumitalic.ttf";
+    public final static String TYPEFACE_ROBOTO_REGULAR = "fonts/nunito_semibold.ttf";
+    public final static String TYPEFACE_ROBOTO_MEDIUM = "fonts/nunito_bold.ttf";
+    public final static String TYPEFACE_ROBOTO_EXTRA_BOLD = "fonts/nunito_extrabold.ttf";
+    public final static String TYPEFACE_ROBOTO_MEDIUM_ITALIC = "fonts/nunito_semibold.ttf";
     public final static String TYPEFACE_ROBOTO_MONO = "fonts/rmono.ttf";
-    public final static String TYPEFACE_MERRIWEATHER_BOLD = "fonts/mw_bold.ttf";
+    public final static String TYPEFACE_MERRIWEATHER_BOLD = "fonts/nunito_extrabold.ttf";
 
     public static Typeface regularTypeface;
     public static Typeface mediumTypeface;

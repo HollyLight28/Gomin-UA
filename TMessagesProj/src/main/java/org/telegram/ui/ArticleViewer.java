@@ -2684,7 +2684,7 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
             Typeface typefaceNormal = selectedFont == 0 ? Typeface.DEFAULT : Typeface.SERIF;
             Typeface typefaceItalic = selectedFont == 0 ? AndroidUtilities.getTypeface("fonts/ritalic.ttf") : Typeface.create("serif", Typeface.ITALIC);
             Typeface typefaceBold = selectedFont == 0 ? AndroidUtilities.bold() : Typeface.create("serif", Typeface.BOLD);
-            Typeface typefaceBoldItalic = selectedFont == 0 ? AndroidUtilities.getTypeface("fonts/rmediumitalic.ttf") : Typeface.create("serif", Typeface.BOLD_ITALIC);
+            Typeface typefaceBoldItalic = selectedFont == 0 ? AndroidUtilities.getTypeface("fonts/nunito_semibold.ttf") : Typeface.create("serif", Typeface.BOLD_ITALIC);
 
             for (int a = 0; a < quoteTextPaints.size(); a++) {
                 updateFontEntry(quoteTextPaints.keyAt(a), quoteTextPaints.valueAt(a), typefaceNormal, typefaceBoldItalic, typefaceBold, typefaceItalic);
@@ -3382,7 +3382,7 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
                     paint.setTypeface(AndroidUtilities.bold());
                 } else if (parent.selectedFont == 1 || parentBlock instanceof TL_iv.pageBlockTitle || parentBlock instanceof TL_iv.pageBlockKicker || parentBlock instanceof TL_iv.pageBlockHeader || parentBlock instanceof TL_iv.pageBlockSubtitle || parentBlock instanceof TL_iv.pageBlockSubheader || isHeadingBlock(parentBlock)) {
                     if (parentBlock instanceof TL_iv.pageBlockTitle || parentBlock instanceof TL_iv.pageBlockHeader || parentBlock instanceof TL_iv.pageBlockSubtitle || parentBlock instanceof TL_iv.pageBlockSubheader || isHeadingBlock(parentBlock)) {
-                        paint.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+                        paint.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
                     } else {
                         if ((flags & TEXT_FLAG_MEDIUM) != 0 && (flags & TEXT_FLAG_ITALIC) != 0) {
                             paint.setTypeface(Typeface.create("serif", Typeface.BOLD_ITALIC));
@@ -3396,7 +3396,7 @@ public class ArticleViewer extends IArticleViewer implements NotificationCenter.
                     }
                 } else {
                     if ((flags & TEXT_FLAG_MEDIUM) != 0 && (flags & TEXT_FLAG_ITALIC) != 0) {
-                        paint.setTypeface(AndroidUtilities.getTypeface("fonts/rmediumitalic.ttf"));
+                        paint.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_semibold.ttf"));
                     } else if ((flags & TEXT_FLAG_MEDIUM) != 0) {
                         paint.setTypeface(AndroidUtilities.getTypeface(AndroidUtilities.TYPEFACE_ROBOTO_MEDIUM));
                     } else if ((flags & TEXT_FLAG_ITALIC) != 0) {

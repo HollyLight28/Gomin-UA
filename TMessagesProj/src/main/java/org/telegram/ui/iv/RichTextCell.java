@@ -229,22 +229,22 @@ public class RichTextCell extends FrameLayout implements Theme.Colorable, TextSe
     private void applyStyle(TL_iv.PageBlock block) {
         if (block instanceof TL_iv.pageBlockHeading1) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 24);
-            editText.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+            editText.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
         } else if (block instanceof TL_iv.pageBlockHeading2) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 22);
-            editText.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+            editText.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
         } else if (block instanceof TL_iv.pageBlockHeading3) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 20);
-            editText.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+            editText.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
         } else if (block instanceof TL_iv.pageBlockHeading4) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 18);
-            editText.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+            editText.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
         } else if (block instanceof TL_iv.pageBlockHeading5) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
-            editText.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+            editText.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
         } else if (block instanceof TL_iv.pageBlockHeading6) {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 14);
-            editText.setTypeface(AndroidUtilities.getTypeface("fonts/mw_bold.ttf"));
+            editText.setTypeface(AndroidUtilities.getTypeface("fonts/nunito_extrabold.ttf"));
         } else {
             editText.setTextSize(TypedValue.COMPLEX_UNIT_DIP, 16);
             editText.setTypeface(null);
