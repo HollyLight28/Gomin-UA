@@ -7,7 +7,7 @@ import org.telegram.messenger.MessagesStorage;
 import org.telegram.messenger.Utilities;
 import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.TLRPC;
-import org.telegram.sqlite.SQLiteCursor;
+import org.telegram.SQLite.SQLiteCursor;
 import org.telegram.messenger.UserConfig;
 
 import java.util.ArrayList;

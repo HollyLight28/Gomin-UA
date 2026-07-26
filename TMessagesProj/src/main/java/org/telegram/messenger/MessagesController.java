@@ -9297,6 +9297,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 }
                 getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_QUICK_REPLIES, topicId);
             } else {
+                /** Gomin start — Anti-delete: перевіряємо keepDeletedMessages */
                 if (channelId == 0) {
                     for (int a = 0; a < messages.size(); a++) {
                         Integer id = messages.get(a);
@@ -9308,10 +9309,15 @@ public class MessagesController extends BaseController implements NotificationCe
                 } else {
                     markDialogMessageAsDeleted(dialogId, messages);
                 }
-                getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId);
-                getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
+                if (!(forAll && ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted())) {
+                    getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId);
+                    getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
+                }
+                /** Gomin end */
             }
-            getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, scheduled, false, movedToScheduled, movedToScheduledMessageId);
+            if (!(forAll && ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted())) {
+                getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, scheduled, false, movedToScheduled, movedToScheduledMessageId);
+            }
         } else {
             if (taskRequest instanceof TLRPC.TL_channels_deleteMessages) {
                 channelId = ((TLRPC.TL_channels_deleteMessages) taskRequest).channel.channel_id;

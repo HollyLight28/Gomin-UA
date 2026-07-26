@@ -167,7 +167,7 @@ public class TextStyleSpan extends MetricAffectingSpan {
     }
 
     public boolean isBoldItalic() {
-        return style.getTypeface() == AndroidUtilities.getTypeface("fonts/nunito_semibold.ttf");
+        return (style.flags & (FLAG_STYLE_BOLD | FLAG_STYLE_ITALIC)) == (FLAG_STYLE_BOLD | FLAG_STYLE_ITALIC);
     }
 
     @Override
