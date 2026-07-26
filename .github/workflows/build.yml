@@ -5,6 +5,9 @@ on:
     branches: [ main, master ]
   workflow_dispatch:
 
+env:
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+
 permissions:
   contents: write
 
@@ -15,7 +18,7 @@ jobs:
 
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v4
+      uses: actions/checkout@v4.0
       with:
         submodules: recursive
         fetch-depth: 0
@@ -33,7 +36,7 @@ jobs:
         cache: gradle
 
     - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      uses: android-actions/setup-android@v4.0.1
       with:
         packages: 'build-tools;35.0.0 ndk;21.4.7075529'
 
