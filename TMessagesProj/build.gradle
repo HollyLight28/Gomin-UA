@@ -73,10 +73,7 @@ dependencies {
 
     constraints {
         implementation("org.jetbrains.kotlin:kotlin-stdlib:2.1.0") {
-            because("kotlin-stdlib-jdk7/jdk8 are merged into kotlin-stdlib in 2.x")
-        }
-        implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:2.1.0") {
-            because("kotlin-stdlib-jdk8 is now a part of kotlin-stdlib")
+            because("kotlin-stdlib-jdk7/jdk8 merged into kotlin-stdlib in 2.x")
         }
     }
     implementation 'com.google.android.recaptcha:recaptcha:18.7.1'
