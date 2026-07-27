@@ -25,7 +25,7 @@ object GominAiChatHelper {
     private const val RETRY_DELAY_MS = 2000L
 
     // Singleton executor для retry delays
-    private val retryExecutor = Executors.newSingleThreadExecutor()
+    private val retryExecutor = Executors.newSingleThreadScheduledExecutor()
 
     val shieldSystemPrompt = """
 Ти — експерт з аналізу міжособистісної комунікації, профайлер поведінкових патернів, спеціаліст з розпізнавання маніпуляцій, психологічного тиску, прихованої агресії, аб’юзивних динамік, коерсивного контролю та токсичних сценаріїв спілкування.
