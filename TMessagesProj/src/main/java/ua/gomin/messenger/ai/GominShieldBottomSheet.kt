@@ -184,6 +184,8 @@ class GominShieldBottomSheet(
             AndroidUtilities.cancelRunOnUIThread(it)
             updateProgressRunnable = null
         }
+        // Скасовуємо API запит — щоб не витікали callback-референси
+        GominAiChatHelper.cancelCurrentRequest()
     }
 
     fun initAnalysis(count: Int = 0) {
@@ -250,6 +252,8 @@ class GominShieldBottomSheet(
                 AndroidUtilities.cancelRunOnUIThread(it)
                 updateProgressRunnable = null
             }
+            // Захист: якщо sheet закрито поки API відповідав — не чіпаємо View
+            if (isDismissed) return@analyzeManipulation
             loadingLayout.visibility = View.GONE
             scrollView.visibility = View.VISIBLE
             

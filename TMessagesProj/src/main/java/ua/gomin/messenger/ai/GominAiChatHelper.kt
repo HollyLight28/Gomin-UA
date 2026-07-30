@@ -371,6 +371,15 @@ If є аб’юз — не пом’якшуй.
     /**
      * Надсилає запит з retry logic. Retry при транзієнтних помилках (429, 503, timeout, network).
      */
+    // Поточний API запит — щоб можна було скасувати при dismiss
+    @Volatile
+    private static var currentFuture: ListenableFuture<*>? = null
+
+    fun cancelCurrentRequest() {
+        currentFuture?.cancel(true)
+        currentFuture = null
+    }
+
     private fun sendWithRetry(
         modelFutures: GenerativeModelFutures,
         promptContent: Content,
@@ -378,6 +387,7 @@ If є аб’юз — не пом’якшуй.
         callback: (success: Boolean, resultText: String) -> Unit
     ) {
         val responseFuture = modelFutures.generateContent(promptContent)
+        currentFuture = responseFuture
         val executor = ContextCompat.getMainExecutor(ApplicationLoader.applicationContext)
 
         Futures.addCallback(responseFuture, object : FutureCallback<com.google.ai.client.generativeai.type.GenerateContentResponse> {
