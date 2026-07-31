@@ -373,7 +373,7 @@ If є аб’юз — не пом’якшуй.
      */
     // Поточний API запит — щоб можна було скасувати при dismiss
     @Volatile
-    private static var currentFuture: ListenableFuture<*>? = null
+    private var currentFuture: ListenableFuture<*>? = null
 
     fun cancelCurrentRequest() {
         currentFuture?.cancel(true)
