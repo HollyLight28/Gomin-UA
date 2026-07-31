@@ -104,7 +104,7 @@ public class AirAlertController {
 
         Utilities.globalQueue.postRunnable(() -> {
             try {
-                URL url = new URL("https://gomin-alert.vova28061991.workers.dev/status?region_id=" + regionId);
+                URL url = new URL("https://air-alert-backend.vova28061991.workers.dev/status?region_id=" + regionId);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(5000);

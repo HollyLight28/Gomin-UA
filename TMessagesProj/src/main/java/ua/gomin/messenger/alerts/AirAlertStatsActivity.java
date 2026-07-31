@@ -122,7 +122,7 @@ public class AirAlertStatsActivity extends UniversalFragment {
         Utilities.globalQueue.postRunnable(() -> {
             Map<Integer, Boolean> results = new HashMap<>();
             try {
-                URL url = new URL("https://gomin-alert.vova28061991.workers.dev/status/all");
+                URL url = new URL("https://air-alert-backend.vova28061991.workers.dev/status/all");
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(5000);
