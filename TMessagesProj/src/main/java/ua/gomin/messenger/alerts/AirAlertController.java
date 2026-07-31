@@ -104,8 +104,7 @@ public class AirAlertController {
 
         Utilities.globalQueue.postRunnable(() -> {
             try {
-                // TODO: замінити на https://api.gomin.ua коли DNS налаштують
-                URL url = new URL("http://204.168.201.148:5000/status?region_id=" + regionId);
+                URL url = new URL("https://gomin-alert.vova28061991.workers.dev/status?region_id=" + regionId);
                 HttpURLConnection connection = (HttpURLConnection) url.openConnection();
                 connection.setRequestMethod("GET");
                 connection.setConnectTimeout(5000);
