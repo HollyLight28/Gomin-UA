@@ -9298,24 +9298,26 @@ public class MessagesController extends BaseController implements NotificationCe
                 getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_QUICK_REPLIES, topicId);
             } else {
                 /** Gomin start — Anti-delete: перевіряємо keepDeletedMessages */
-                if (channelId == 0) {
-                    for (int a = 0; a < messages.size(); a++) {
-                        Integer id = messages.get(a);
-                        MessageObject obj = dialogMessagesByIds.get(id);
-                        if (obj != null) {
-                            obj.deleted = true;
+                boolean isLocalDelete = taskId == 0;
+                if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && !isLocalDelete) {
+                    if (channelId == 0) {
+                        for (int a = 0; a < messages.size(); a++) {
+                            Integer id = messages.get(a);
+                            MessageObject obj = dialogMessagesByIds.get(id);
+                            if (obj != null) {
+                                obj.deleted = true;
+                            }
                         }
+                    } else {
+                        markDialogMessageAsDeleted(dialogId, messages);
                     }
                 } else {
-                    markDialogMessageAsDeleted(dialogId, messages);
-                }
-                if (!(forAll && ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted())) {
                     getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId);
                     getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
                 }
                 /** Gomin end */
             }
-            if (!(forAll && ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted())) {
+            if (taskId == 0 || !ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted()) {
                 getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, messages, channelId, scheduled, false, movedToScheduled, movedToScheduledMessageId);
             }
         } else {
