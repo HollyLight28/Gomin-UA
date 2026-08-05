@@ -69,6 +69,7 @@ import org.telegram.tgnet.TLRPC;
 import org.telegram.tgnet.tl.TL_stories;
 import org.telegram.ui.ActionBar.ActionBar;
 import org.telegram.ui.ActionBar.ActionBarAnimatedSubtitleOverlayContainer;
+import ua.gomin.messenger.helpers.ui.GominFontHelper;
 import org.telegram.ui.ActionBar.AlertDialog;
 import org.telegram.ui.ActionBar.BaseFragment;
 import org.telegram.ui.ActionBar.SimpleTextView;
@@ -158,7 +159,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
     LinearLayoutManager layoutManager;
     AnimatedTextView titleView;
     ActionBarAnimatedSubtitleOverlayContainer subtitleOverlayContainer;
-    ImageView telegramLogoView;
+    SimpleTextView telegramLogoView;
     ImageView emojiStatusView;
     AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable statusDrawable;
     boolean drawCircleForce;
@@ -325,18 +326,19 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         titleView = new AnimatedTextView(getContext(), true, true, false);
         titleView.setGravity(Gravity.LEFT);
         titleView.setTextColor(getTextLogoColor());
-        titleView.setTypeface(AndroidUtilities.bold());
+        titleView.setTypeface(GominFontHelper.getDefaultBold());
         titleView.setPadding(0, dp(8), 0, dp(8));
-        titleView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 18 : 20));
+        titleView.setTextSize(dp(!AndroidUtilities.isTablet() && getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE ? 20 : 22));
         titleView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         titleView.setFocusableInTouchMode(true);
         addView(titleView, LayoutHelper.createFrame(LayoutHelper.MATCH_PARENT, LayoutHelper.WRAP_CONTENT));
 
-        telegramLogoView = new ImageView(context);
+        telegramLogoView = new SimpleTextView(context);
+        telegramLogoView.setText(LocaleController.getString("AppName", R.string.AppName));
         telegramLogoView.setContentDescription(getString(R.string.AppName));
-        telegramLogoView.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
-        telegramLogoView.setImageResource(R.drawable.telegram_logo_2);
-        telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
+        telegramLogoView.setTextColor(getTextLogoColor());
+        telegramLogoView.setTypeface(GominFontHelper.getDefaultBold());
+        telegramLogoView.setTextSize(dp(20));
         telegramLogoView.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_YES);
         telegramLogoView.setFocusableInTouchMode(true);
         addView(telegramLogoView, LayoutHelper.createFrame(90, 22));
@@ -1156,7 +1158,7 @@ public class DialogStoriesCell extends FrameLayout implements NotificationCenter
         if (subtitleOverlayContainer != null) {
             subtitleOverlayContainer.updateColors();
         }
-        telegramLogoView.setColorFilter(getTextLogoColor(), PorterDuff.Mode.MULTIPLY);
+        telegramLogoView.setTextColor(getTextLogoColor());
         AndroidUtilities.forEachViews(recyclerListView, view -> {
             StoryCell cell = (StoryCell) view;
             cell.invalidate();

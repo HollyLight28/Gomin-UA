@@ -59,6 +59,7 @@ import org.telegram.messenger.SharedConfig;
 import org.telegram.ui.Adapters.FiltersView;
 import org.telegram.ui.Components.AnimatedEmojiDrawable;
 import org.telegram.ui.Components.BackupImageView;
+import ua.gomin.messenger.helpers.ui.GominFontHelper;
 import org.telegram.ui.Components.ChatAvatarContainer;
 import org.telegram.ui.Components.CubicBezierInterpolator;
 import org.telegram.ui.Components.EllipsizeSpanAnimator;
@@ -513,7 +514,8 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             titleTextView[i].setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
         }
         titleTextView[i].setEmojiColor(titleTextView[i].getTextColor());
-        titleTextView[i].setTypeface(AndroidUtilities.bold());
+        titleTextView[i].setTypeface(GominFontHelper.getDefaultBold());
+        titleTextView[i].setTextSize(dp(22));
         titleTextView[i].setDrawablePadding(dp(4));
         titleTextView[i].setPadding(0, dp(8), 0, dp(8));
         titleTextView[i].setRightDrawableTopPadding(-dp(1));
