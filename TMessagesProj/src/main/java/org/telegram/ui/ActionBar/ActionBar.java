@@ -100,7 +100,19 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
     /** Gomin start */
     private void updateAirAlertStatus() {
         if (titleTextView[0] != null) {
-            setTitle(lastTitle, lastRightDrawable);
+            // Directly update text color instead of calling setTitle to avoid null check issues
+            int color;
+            if (ua.gomin.messenger.alerts.AirAlertController.isAlertActive()) {
+                color = 0xFFFF0000;
+            } else {
+                color = titleColorToSet != 0 ? titleColorToSet : getThemedColor(Theme.key_actionBarDefaultTitle);
+            }
+            titleTextView[0].setTextColor(color);
+            titleTextView[0].setEmojiColor(color);
+            if (titleTextView[1] != null) {
+                titleTextView[1].setTextColor(color);
+                titleTextView[1].setEmojiColor(color);
+            }
         }
     }
 
@@ -514,6 +526,10 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             titleTextView[i].setTextColor(getThemedColor(Theme.key_actionBarDefaultTitle));
         }
         titleTextView[i].setEmojiColor(titleTextView[i].getTextColor());
+        /** Gomin start */
+        // Apply alert color immediately when creating title view
+        updateAirAlertStatus();
+        /** Gomin end */
         titleTextView[i].setTypeface(GominFontHelper.getDefaultBold());
         titleTextView[i].setTextSize(dp(22));
         titleTextView[i].setDrawablePadding(dp(4));
@@ -555,11 +571,7 @@ public class ActionBar extends FrameLayout implements FactorAnimator.Target, The
             titleTextView[0].setVisibility(value != null && !isSearchFieldVisible ? VISIBLE : INVISIBLE);
             titleTextView[0].setText(lastTitle = value);
             /** Gomin start */
-            if (ua.gomin.messenger.alerts.AirAlertController.isAlertActive()) {
-                titleTextView[0].setTextColor(0xFFFF0000);
-            } else {
-                titleTextView[0].setTextColor(titleColorToSet != 0 ? titleColorToSet : getThemedColor(Theme.key_actionBarDefaultTitle));
-            }
+            updateAirAlertStatus();
             /** Gomin end */
             if (attached && lastRightDrawable instanceof AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) {
                 ((AnimatedEmojiDrawable.SwapAnimatedEmojiDrawable) lastRightDrawable).setParentView(null);
