@@ -26048,12 +26048,12 @@ public class ChatActivity extends BaseFragment implements
         if (ChatObject.isChannel(currentChat)) {
             if (channelId == 0 && mergeDialogId != 0) {
                 loadIndex = 1;
-            } else if (channelId == -dialog_id) {
+            } else if (channelId == -dialog_id || channelId == dialog_id) {
                 loadIndex = 0;
             } else {
                 return;
             }
-        } else if (channelId != 0) {
+        } else if (channelId != 0 && channelId != dialog_id) {
             return;
         }
         if (replyingMessageObject != null && markAsDeletedMessages.contains(replyingMessageObject.getId())) {
