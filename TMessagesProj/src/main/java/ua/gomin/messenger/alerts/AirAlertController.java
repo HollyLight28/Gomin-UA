@@ -51,17 +51,25 @@ public class AirAlertController {
         if (context == null) return;
         
         isAlertActive = GominCoreConfig.INSTANCE.getAirAlertLastActive(context);
+        boolean alertsEnabled = GominCoreConfig.INSTANCE.getAirAlertEnabled(context);
+        FileLog.d("AirAlertController: init - alertsEnabled=" + alertsEnabled + ", isAlertActive=" + isAlertActive);
 
-        if (GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
+        if (alertsEnabled) {
             startMonitoring();
             String regionId = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
+            FileLog.d("AirAlertController: init - regionId=" + regionId);
             if (regionId != null && !regionId.isEmpty()) {
                 try {
                     com.google.firebase.messaging.FirebaseMessaging.getInstance().subscribeToTopic("region_" + regionId);
+                    FileLog.d("AirAlertController: subscribed to FCM topic: region_" + regionId);
                 } catch (Exception e) {
-                    FileLog.e(e);
+                    FileLog.e("AirAlertController: failed to subscribe to FCM topic: " + e.getMessage());
                 }
+            } else {
+                FileLog.e("AirAlertController: regionId is null or empty, cannot subscribe to FCM topic");
             }
+        } else {
+            FileLog.d("AirAlertController: alerts are disabled, skipping FCM subscription");
         }
     }
 
@@ -275,19 +283,26 @@ public class AirAlertController {
         final Context context = ApplicationLoader.applicationContext;
         if (context == null) return;
         
-        if (!GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
+        boolean alertsEnabled = GominCoreConfig.INSTANCE.getAirAlertEnabled(context);
+        FileLog.d("AirAlertController: handlePushStatus - alert=" + alert + ", title=" + title + ", body=" + body + ", regionId=" + regionId + ", alertsEnabled=" + alertsEnabled);
+        
+        if (!alertsEnabled) {
+            FileLog.d("AirAlertController: alerts are disabled, ignoring push");
             return;
         }
         
         String userRegionId = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
+        FileLog.d("AirAlertController: userRegionId=" + userRegionId);
         if (!AirAlertHelper.shouldProcessAlert(regionId, userRegionId)) {
-            FileLog.d("AirAlertController: push region_id (" + regionId + ") does not match user region_id (" + userRegionId + "). Ignore.");
+            FileLog.e("AirAlertController: push region_id (" + regionId + ") does not match user region_id (" + userRegionId + "). Ignoring push.");
             return;
         }
         
+        FileLog.d("AirAlertController: processing push alert=" + alert);
         AndroidUtilities.runOnUIThread(() -> {
             if (isTesting) {
                 pendingAlertStatus = alert;
+                FileLog.d("AirAlertController: in testing mode, pendingAlertStatus set to " + alert);
             } else {
                 setAlertStatus(alert, title, body);
             }
