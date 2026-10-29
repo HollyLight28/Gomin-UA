@@ -111,7 +111,7 @@ public class AirAlertController {
                 NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgAirAlertStatusChanged);
             }
         };
-        if (Looper.myLooper() == ApplicationLoader.applicationHandler.getLooper()) {
+        if (Looper.myLooper() == Looper.getMainLooper()) {
             clearInternal.run();
         } else {
             AndroidUtilities.runOnUIThread(clearInternal);
