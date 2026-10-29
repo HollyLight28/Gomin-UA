@@ -49,10 +49,11 @@ public class AirAlertController {
     public static void init() {
         Context context = ApplicationLoader.applicationContext;
         if (context == null) return;
-        
-        isAlertActive = GominCoreConfig.INSTANCE.getAirAlertLastActive(context);
 
-        if (GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
+        boolean alertsEnabled = GominCoreConfig.INSTANCE.getAirAlertEnabled(context);
+        isAlertActive = alertsEnabled && GominCoreConfig.INSTANCE.getAirAlertLastActive(context);
+
+        if (alertsEnabled) {
             startMonitoring();
             String regionId = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
             if (regionId != null && !regionId.isEmpty()) {
@@ -62,7 +63,19 @@ public class AirAlertController {
                     FileLog.e(e);
                 }
             }
+        } else {
+            clearAlertState();
         }
+    }
+
+    public static void clearAlertState() {
+        Context context = ApplicationLoader.applicationContext;
+        isAlertActive = false;
+        if (context != null) {
+            GominCoreConfig.INSTANCE.setAirAlertLastActive(context, false);
+            AirAlertNotificationHelper.cancelAll(context);
+        }
+        NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgAirAlertStatusChanged);
     }
 
     public static void startMonitoring() {
@@ -151,9 +164,7 @@ public class AirAlertController {
         if (context == null) return;
         
         if (!GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
-            isAlertActive = false;
-            GominCoreConfig.INSTANCE.setAirAlertLastActive(context, false);
-            AirAlertNotificationHelper.cancelAll(context);
+            clearAlertState();
             return;
         }
 
@@ -190,7 +201,9 @@ public class AirAlertController {
     }
 
     public static boolean isAlertActive() {
-        return isAlertActive;
+        Context context = ApplicationLoader.applicationContext;
+        if (context == null) return false;
+        return isAlertActive && GominCoreConfig.INSTANCE.getAirAlertEnabled(context);
     }
 
     public static void stopSiren() {
