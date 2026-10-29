@@ -173,4 +173,26 @@ public class AirAlertNotificationHelper {
             notificationManager.cancel(NOTIFICATION_ID + 1);
         }
     }
+
+    /** Gomin start — чи показані зараз наші сповіщення тривоги (для ідемпотентного clearAlertState) */
+    public static boolean hasActiveAlertNotifications(Context context) {
+        if (context == null) return false;
+        // NotificationManager.getActiveNotifications() з'явився в API 23; на 21–22 його немає
+        if (android.os.Build.VERSION.SDK_INT < android.os.Build.VERSION_CODES.M) {
+            return false;
+        }
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (notificationManager == null) return false;
+        try {
+            for (android.service.notification.StatusBarNotification sbn : notificationManager.getActiveNotifications()) {
+                if (sbn.getId() == NOTIFICATION_ID || sbn.getId() == NOTIFICATION_ID + 1) {
+                    return true;
+                }
+            }
+        } catch (Exception e) {
+            FileLog.e(e);
+        }
+        return false;
+    }
+    /** Gomin end */
 }

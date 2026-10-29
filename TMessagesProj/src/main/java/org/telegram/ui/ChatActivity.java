@@ -23295,7 +23295,9 @@ public class ChatActivity extends BaseFragment implements
                                 processNewMessages(arrayList);
                             }
                         } else {
-                            processDeletedMessages(ids, ChatObject.isChannel(currentChat) ? dialog_id : 0, false);
+                            /** Gomin start — регресія ad87e36a9: у MODE_PINNED channelId = -dialog_id */
+                            processDeletedMessages(ids, ChatObject.isChannel(currentChat) ? -dialog_id : 0, false);
+                            /** Gomin end */
                         }
                     }
                 } else {
@@ -26048,12 +26050,12 @@ public class ChatActivity extends BaseFragment implements
         if (ChatObject.isChannel(currentChat)) {
             if (channelId == 0 && mergeDialogId != 0) {
                 loadIndex = 1;
-            } else if (channelId == -dialog_id || channelId == dialog_id) {
+            } else if (channelId == -dialog_id) {
                 loadIndex = 0;
             } else {
                 return;
             }
-        } else if (channelId != 0 && channelId != dialog_id) {
+        } else if (channelId != 0) {
             return;
         }
         if (replyingMessageObject != null && markAsDeletedMessages.contains(replyingMessageObject.getId())) {

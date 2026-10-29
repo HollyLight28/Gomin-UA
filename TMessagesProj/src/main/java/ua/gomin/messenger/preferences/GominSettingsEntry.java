@@ -273,6 +273,7 @@ public class GominSettingsEntry extends UniversalFragment {
                         org.telegram.messenger.FileLog.e(e);
                     }
                 }
+                ua.gomin.messenger.alerts.AirAlertController.clearAlertState();
             }
         }
 

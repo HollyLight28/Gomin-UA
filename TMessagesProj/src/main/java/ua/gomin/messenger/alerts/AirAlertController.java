@@ -1,6 +1,7 @@
 package ua.gomin.messenger.alerts;
 
 import android.content.Context;
+import android.os.Looper;
 import android.util.Pair;
 
 import org.json.JSONObject;
@@ -24,6 +25,11 @@ public class AirAlertController {
     private static final String TAG = "AirAlertController";
     
     private static volatile boolean isAlertActive = false;
+
+    /** Gomin start — кеш прапорця «Зберігати тривоги вмикали», щоб isAlertActive() не читала prefs на UI-потоці */
+    private static volatile boolean alertsEnabledCache = false;
+    /** Gomin end */
+
     private static volatile String lastAlertTitle = null;
     private static volatile String lastAlertBody = null;
     
@@ -49,10 +55,16 @@ public class AirAlertController {
     public static void init() {
         Context context = ApplicationLoader.applicationContext;
         if (context == null) return;
-        
-        isAlertActive = GominCoreConfig.INSTANCE.getAirAlertLastActive(context);
 
-        if (GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
+        boolean alertsEnabled = GominCoreConfig.INSTANCE.getAirAlertEnabled(context);
+
+        /** Gomin start — оновлюємо кеш прапорця при init */
+        alertsEnabledCache = alertsEnabled;
+        /** Gomin end */
+
+        isAlertActive = alertsEnabled && GominCoreConfig.INSTANCE.getAirAlertLastActive(context);
+
+        if (alertsEnabled) {
             startMonitoring();
             String regionId = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
             if (regionId != null && !regionId.isEmpty()) {
@@ -62,10 +74,55 @@ public class AirAlertController {
                     FileLog.e(e);
                 }
             }
+        } else {
+            clearAlertState();
         }
     }
 
+    /** Gomin start — повне, ідемпотентне очищення стану (рев'ю TASK2, п. 2 і 3) */
+    public static void clearAlertState() {
+        Runnable clearInternal = () -> {
+            Context context = ApplicationLoader.applicationContext;
+            alertsEnabledCache = false;
+
+            if (testStopRunnable != null) {
+                AndroidUtilities.cancelRunOnUIThread(testStopRunnable);
+                testStopRunnable = null;
+            }
+            if (sirenStopRunnable != null) {
+                AndroidUtilities.cancelRunOnUIThread(sirenStopRunnable);
+                sirenStopRunnable = null;
+            }
+            stopMonitoring();
+            isTesting = false;
+            pendingAlertStatus = false;
+            savedAlertState = false;
+            lastAlertTitle = null;
+            lastAlertBody = null;
+
+            // Ідемпотентність: якщо тривоги не було і нотифікацій немає — не писати prefs і не постити нотифікацію повторно
+            boolean notificationsVisible = context != null && AirAlertNotificationHelper.hasActiveAlertNotifications(context);
+            if (isAlertActive || notificationsVisible) {
+                isAlertActive = false;
+                if (context != null) {
+                    GominCoreConfig.INSTANCE.setAirAlertLastActive(context, false);
+                    AirAlertNotificationHelper.cancelAll(context);
+                }
+                NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgAirAlertStatusChanged);
+            }
+        };
+        if (Looper.myLooper() == ApplicationLoader.applicationHandler.getLooper()) {
+            clearInternal.run();
+        } else {
+            AndroidUtilities.runOnUIThread(clearInternal);
+        }
+    }
+    /** Gomin end */
+
     public static void startMonitoring() {
+        /** Gomin start — перемикання в налаштуваннях проходить через startMonitoring: оновлюємо кеш */
+        alertsEnabledCache = true;
+        /** Gomin end */
         stopMonitoring();
         timer = new Timer();
         timer.scheduleAtFixedRate(new TimerTask() {
@@ -151,9 +208,7 @@ public class AirAlertController {
         if (context == null) return;
         
         if (!GominCoreConfig.INSTANCE.getAirAlertEnabled(context)) {
-            isAlertActive = false;
-            GominCoreConfig.INSTANCE.setAirAlertLastActive(context, false);
-            AirAlertNotificationHelper.cancelAll(context);
+            clearAlertState();
             return;
         }
 
@@ -190,7 +245,9 @@ public class AirAlertController {
     }
 
     public static boolean isAlertActive() {
-        return isAlertActive;
+        /** Gomin start — читаємо кеш, а не SharedPreferences (метод викликається з setTitle на UI-потоці) */
+        return isAlertActive && alertsEnabledCache;
+        /** Gomin end */
     }
 
     public static void stopSiren() {
