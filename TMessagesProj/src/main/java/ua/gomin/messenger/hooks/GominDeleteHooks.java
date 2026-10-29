@@ -1,7 +1,7 @@
 package ua.gomin.messenger.hooks;
 
 import org.telegram.SQLite.SQLiteCursor;
-import org.telegram.messenger.NativeByteBuffer;
+import org.telegram.tgnet.NativeByteBuffer;
 import org.telegram.tgnet.TLRPC;
 
 import java.util.ArrayList;
