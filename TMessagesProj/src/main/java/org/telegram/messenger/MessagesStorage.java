@@ -13835,22 +13835,9 @@ public class MessagesStorage extends BaseController {
                         long did = cursor.longValue(0);
                         int mid = cursor.intValue(5);
                         unknownMessages.remove((Integer) mid);
-                        /** Gomin start */
-                        boolean kept = false;
-                        /** Gomin start — ghost лише для видалень, ініційованих співрозмовником (не локальних) */
-                        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && !localDelete && cursor.intValue(3) == 0) {
-                            NativeByteBuffer data = cursor.byteBufferValue(1);
-                            if (data != null) {
-                                TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
-                                data.reuse();
-                                if (message != null) {
-                                    message.flags |= 0x40000000;
-                                    message.dialog_id = did;
-                                    messagesToGhost.add(message);
-                                    kept = true;
-                                }
-                            }
-                        }
+                        /** Gomin start — ghost-логіка винесена в GominDeleteHooks */
+                        boolean kept = ua.gomin.messenger.hooks.GominDeleteHooks.INSTANCE.markAsGhost(cursor, messagesToGhost, localDelete);
+                        /** Gomin end */
                         if (!kept) {
                             ArrayList<Integer> mids = messagesByDialogs.get(did);
                             if (mids == null) {
@@ -13859,7 +13846,6 @@ public class MessagesStorage extends BaseController {
                             }
                             mids.add(mid);
                         }
-                        /** Gomin end */
                         if (did != currentUser) {
                             int read_state = cursor.intValue(2);
                             if (cursor.intValue(3) == 0) {
@@ -13889,9 +13875,9 @@ public class MessagesStorage extends BaseController {
                             data.reuse();
                             /** Gomin start */
                             if (!kept && (DialogObject.isEncryptedDialog(did) || deleteFiles)) {
-                            /** Gomin end */
+                                /** Gomin end */
                                 addFilesToDelete(message, filesToDelete, idsToDelete, namesToDelete, false);
-                            /** Gomin start */
+                                /** Gomin start */
                             }
                             /** Gomin end */
 
