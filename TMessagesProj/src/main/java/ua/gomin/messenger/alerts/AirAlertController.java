@@ -193,6 +193,19 @@ public class AirAlertController {
         return isAlertActive;
     }
 
+    public static void resetAlertStatus() {
+        AndroidUtilities.runOnUIThread(() -> {
+            Context context = ApplicationLoader.applicationContext;
+            if (context == null) return;
+            isAlertActive = false;
+            lastAlertTitle = null;
+            lastAlertBody = null;
+            GominCoreConfig.INSTANCE.setAirAlertLastActive(context, false);
+            AirAlertNotificationHelper.cancelAll(context);
+            NotificationCenter.getGlobalInstance().postNotificationName(NotificationCenter.cgAirAlertStatusChanged);
+        });
+    }
+
     public static void stopSiren() {
         AndroidUtilities.runOnUIThread(() -> {
             if (isTesting) {

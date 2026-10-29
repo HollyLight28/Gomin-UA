@@ -265,6 +265,7 @@ public class GominSettingsEntry extends UniversalFragment {
                 }
             } else {
                 ua.gomin.messenger.alerts.AirAlertController.stopMonitoring();
+                ua.gomin.messenger.alerts.AirAlertController.resetAlertStatus();
                 String currentRegion = GominCoreConfig.INSTANCE.getAirAlertRegionId(context);
                 if (!currentRegion.isEmpty()) {
                     try {
