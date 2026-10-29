@@ -23,7 +23,7 @@ public class GominDeleteHooks {
      * Позначає повідомлення як ghost (прапорець 0x40000000) і додає його в messagesToGhost.
      * Повертає true, якщо повідомлення реально оброблене як ghost (тоді викликач НЕ повинен його видаляти).
      */
-    public boolean markAsGhost(SQLiteCursor cursor, ArrayList<TLRPC.Message> messagesToGhost, boolean localDelete) {
+    public boolean markAsGhost(SQLiteCursor cursor, ArrayList<TLRPC.Message> messagesToGhost, boolean localDelete) throws org.telegram.SQLite.SQLiteException {
         if (!shouldKeepAsGhost(localDelete, cursor.intValue(3) == 0)) {
             return false;
         }
