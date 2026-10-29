@@ -2115,7 +2115,9 @@ public class MessagesStorage extends BaseController {
                 cursor.dispose();
                 cursor = null;
                 if (!mids.isEmpty()) {
-                    markMessagesAsDeletedInternal(selfId, mids, true, 0, 0);
+                    /** Gomin start — deleteSavedDialog: користувач видаляє збережений сам → повне видалення */
+                    markMessagesAsDeletedInternal(selfId, mids, true, 0, 0, true);
+                    /** Gomin end */
                     updateDialogsWithDeletedMessages(selfId, -selfId, mids, null);
                     AndroidUtilities.runOnUIThread(() -> {
                         getMessagesController().markDialogMessageAsDeleted(selfId, mids);
@@ -4261,7 +4263,9 @@ public class MessagesStorage extends BaseController {
                     getFileLoader().cancelLoadFiles(namesToDelete);
                     getMessagesController().markDialogMessageAsDeleted(dialogId, mids);
                 });
-                markMessagesAsDeletedInternal(dialogId, mids, false, 0, 0);
+                /** Gomin start — deleteUserChatHistory: користувач видаляє історію сам → повне видалення */
+                markMessagesAsDeletedInternal(dialogId, mids, false, 0, 0, true);
+                /** Gomin end */
                 updateDialogsWithDeletedMessagesInternal(dialogId, DialogObject.isChatDialog(dialogId) ? -dialogId : 0, mids, null);
                 getFileLoader().deleteFiles(filesToDelete, 0);
                 if (!mids.isEmpty()) {
@@ -13688,7 +13692,7 @@ public class MessagesStorage extends BaseController {
                         ArrayList<Integer> mids = dialogs.valueAt(a);
                         AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.messagesDeleted, mids, 0L, false));
                         updateDialogsWithReadMessagesInternal(mids, null, null, null, null);
-                        markMessagesAsDeletedInternal(dialogId, mids, true, 0, 0);
+                        markMessagesAsDeletedInternal(dialogId, mids, true, 0, 0, false);
                         updateDialogsWithDeletedMessagesInternal(dialogId, 0, mids, null);
                     }
                 }
@@ -13736,7 +13740,7 @@ public class MessagesStorage extends BaseController {
         AndroidUtilities.runOnUIThread(() -> getNotificationCenter().postNotificationName(NotificationCenter.quickRepliesUpdated));
     }
 
-    private ArrayList<Long> markMessagesAsDeletedInternal(long dialogId, ArrayList<Integer> messages, boolean deleteFiles, int mode, int threadMessageId) {
+    private ArrayList<Long> markMessagesAsDeletedInternal(long dialogId, ArrayList<Integer> messages, boolean deleteFiles, int mode, int threadMessageId, boolean localDelete) {
         SQLiteCursor cursor = null;
         SQLitePreparedStatement state = null;
         try {
@@ -13833,7 +13837,8 @@ public class MessagesStorage extends BaseController {
                         unknownMessages.remove((Integer) mid);
                         /** Gomin start */
                         boolean kept = false;
-                        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && cursor.intValue(3) == 0) {
+                        /** Gomin start — ghost лише для видалень, ініційованих співрозмовником (не локальних) */
+                        if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && !localDelete && cursor.intValue(3) == 0) {
                             NativeByteBuffer data = cursor.byteBufferValue(1);
                             if (data != null) {
                                 TLRPC.Message message = TLRPC.Message.TLdeserialize(data, data.readInt32(false), false);
@@ -14602,18 +14607,24 @@ public class MessagesStorage extends BaseController {
     }
 
     public ArrayList<Long> markMessagesAsDeleted(long dialogId, ArrayList<Integer> messages, boolean useQueue, boolean deleteFiles, int mode, int topicId) {
+        return markMessagesAsDeleted(dialogId, messages, useQueue, deleteFiles, mode, topicId, false);
+    }
+
+    /** Gomin start — localDelete: видалення ініційоване самим користувачем (не ghost) */
+    public ArrayList<Long> markMessagesAsDeleted(long dialogId, ArrayList<Integer> messages, boolean useQueue, boolean deleteFiles, int mode, int topicId, boolean localDelete) {
         if (messages.isEmpty()) {
             return null;
         }
         if (useQueue) {
-            storageQueue.postRunnable(() -> markMessagesAsDeletedInternal(dialogId, messages, deleteFiles, mode, topicId));
+            storageQueue.postRunnable(() -> markMessagesAsDeletedInternal(dialogId, messages, deleteFiles, mode, topicId, localDelete));
         } else {
-            return markMessagesAsDeletedInternal(dialogId, messages, deleteFiles, mode, topicId);
+            return markMessagesAsDeletedInternal(dialogId, messages, deleteFiles, mode, topicId, localDelete);
         }
         return null;
     }
+    /** Gomin end */
 
-    private ArrayList<Long> markMessagesAsDeletedInternal(long channelId, int mid, boolean deleteFiles) {
+    private ArrayList<Long> markMessagesAsDeletedInternal(long channelId, int mid, boolean deleteFiles, boolean localDelete) {
         SQLiteCursor cursor = null;
         SQLitePreparedStatement state = null;
         try {
@@ -14719,7 +14730,7 @@ public class MessagesStorage extends BaseController {
             }
 
             /** Gomin start */
-            if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && channelId == 0) {
+            if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && !localDelete && channelId == 0) {
                 database.executeFast(String.format(Locale.US, "DELETE FROM messages_v2 WHERE uid = %d AND mid <= %d AND out != 0", -channelId,
                         mid)).stepThis().dispose();
                 database.executeFast(String.format(Locale.US, "DELETE FROM messages_topics WHERE uid = %d AND mid <= %d AND out != 0", -
@@ -14751,14 +14762,20 @@ public class MessagesStorage extends BaseController {
         return null;
     }
 
+    /** Gomin start — перевантаження з localDelete, щоб не ламати існуючі виклики (серверні апдейти) */
     public ArrayList<Long> markMessagesAsDeleted(long channelId, int mid, boolean useQueue, boolean deleteFiles) {
+        return markMessagesAsDeleted(channelId, mid, useQueue, deleteFiles, false);
+    }
+
+    public ArrayList<Long> markMessagesAsDeleted(long channelId, int mid, boolean useQueue, boolean deleteFiles, boolean localDelete) {
         if (useQueue) {
-            storageQueue.postRunnable(() -> markMessagesAsDeletedInternal(channelId, mid, deleteFiles));
+            storageQueue.postRunnable(() -> markMessagesAsDeletedInternal(channelId, mid, deleteFiles, localDelete));
         } else {
-            return markMessagesAsDeletedInternal(channelId, mid, deleteFiles);
+            return markMessagesAsDeletedInternal(channelId, mid, deleteFiles, localDelete);
         }
         return null;
     }
+    /** Gomin end */
 
     private void fixUnsupportedMedia(TLRPC.Message message) {
         if (message == null) {

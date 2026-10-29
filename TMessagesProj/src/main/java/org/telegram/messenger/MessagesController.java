@@ -9297,7 +9297,7 @@ public class MessagesController extends BaseController implements NotificationCe
                 }
                 getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, false, ChatActivity.MODE_QUICK_REPLIES, topicId);
             } else {
-                /** Gomin start — Anti-delete: перевіряємо keepDeletedMessages */
+                /** Gomin start — Anti-delete: локальне видалення (taskId == 0) → повне видалення, не ghost */
                 boolean isLocalDelete = taskId == 0;
                 if (ua.gomin.messenger.hooks.GominFeatureHooks.INSTANCE.shouldKeepDeleted() && !isLocalDelete) {
                     if (channelId == 0) {
@@ -9312,7 +9312,7 @@ public class MessagesController extends BaseController implements NotificationCe
                         markDialogMessageAsDeleted(dialogId, messages);
                     }
                 } else {
-                    getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId);
+                    getMessagesStorage().markMessagesAsDeleted(dialogId, messages, true, forAll, 0, topicId, isLocalDelete);
                     getMessagesStorage().updateDialogsWithDeletedMessages(dialogId, channelId, messages, null);
                 }
                 /** Gomin end */

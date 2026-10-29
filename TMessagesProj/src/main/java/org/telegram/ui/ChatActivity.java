@@ -23295,7 +23295,9 @@ public class ChatActivity extends BaseFragment implements
                                 processNewMessages(arrayList);
                             }
                         } else {
-                            processDeletedMessages(ids, ChatObject.isChannel(currentChat) ? dialog_id : 0, false);
+                            /** Gomin start — регресія ad87e36a9: у MODE_PINNED channelId = -dialog_id */
+                            processDeletedMessages(ids, ChatObject.isChannel(currentChat) ? -dialog_id : 0, false);
+                            /** Gomin end */
                         }
                     }
                 } else {
